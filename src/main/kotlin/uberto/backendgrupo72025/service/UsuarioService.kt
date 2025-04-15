@@ -182,13 +182,12 @@ class UsuarioService(
     }
 
     @Transactional
-    fun calificarViaje(idUsuario: String?, calificacion: CalificacionDTO): ComentarioDTO {
+    fun calificarViaje(idUsuario: String?, calificacion: CalificacionDTO) {
         val viaje = viajeService.getViajeById(calificacion.idViaje)
-        val comentario = comentarioService.calificar(calificacion, viaje, idUsuario)
+        comentarioService.calificar(calificacion, viaje, idUsuario)
         viaje.viajeComentado=true
         actualizarCalificacion(viaje.conductor)
         viajeService.save(viaje)
-        return comentario.toComentarioDTO(viaje.conductor.nombreYApellido(), viaje.conductor.foto)
     }
 
     @Transactional
