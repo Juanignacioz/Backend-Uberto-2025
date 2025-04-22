@@ -190,6 +190,15 @@ class UsuarioService(
         viajeService.save(viaje)
     }
 
+    fun validarUsuario(nombreUsuario: String) {
+        if (viajeroRepository.existsByUsername(nombreUsuario) || conductorRepository.existsByUsername(nombreUsuario)) {
+            return
+        }
+        else {
+            throw CredencialesInvalidasException()
+        }
+    }
+
     @Transactional
     fun eliminarComentario(idViajero: String?, idComentario: String?) {
         val comentario = comentarioService.getComentarioById(idComentario)

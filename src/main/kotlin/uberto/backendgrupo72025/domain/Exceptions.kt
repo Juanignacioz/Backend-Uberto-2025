@@ -13,5 +13,8 @@ class NotFoundException(message : String) : RuntimeException(message)
 class NotAllowedException(message: String) : RuntimeException(message)
 
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
-class UnauthorizedException(message: String) : RuntimeException(message)
+open class UnauthorizedException(message: String) : RuntimeException(message)
 
+class CredencialesInvalidasException(message: String = "Credenciales inválidas. Por favor, intente nuevamente.") : UnauthorizedException(message)
+
+class TokenExpiradoException(message: String = "Sesión expirada.") : UnauthorizedException(message)

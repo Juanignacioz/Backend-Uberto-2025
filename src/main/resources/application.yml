@@ -1,0 +1,24 @@
+spring:
+    application:
+        name: backend-grupo7-2025
+
+    devtools:
+        livereload:
+            enabled: false
+
+    datasource:
+        url: jdbc:postgresql://localhost:5432/
+        username: postgres
+        password: postgres
+        driver-class-name: org.postgresql.Driver
+
+    jpa:
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+        open-in-view: false
+        show-sql: true
+        hibernate:
+            ddl-auto: create-drop
+
+security:
+    secret-key: cd372fb85148700fa88095e3492d3f9f5beb43e555e5ff26d95f5a6adc36f8e6
+    access-token-minutes: 300

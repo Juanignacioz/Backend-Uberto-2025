@@ -6,9 +6,12 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import uberto.backendgrupo72025.domain.*
 import java.time.LocalDateTime
+import java.util.*
 
 @Repository
 interface ViajeroRepository  : CrudRepository<Viajero, String?> {
+
+    fun existsByUsername(username: String): Boolean
 
     fun findByUsernameAndContrasenia(username: String, contrasenia: String): Viajero?
 
@@ -34,6 +37,8 @@ interface ViajeroRepository  : CrudRepository<Viajero, String?> {
 
 @Repository
 interface ConductorRepository  : CrudRepository<Conductor, String?> {
+
+    fun existsByUsername(username: String): Boolean
 
     fun findByUsernameAndContrasenia(username: String, contrasenia: String): Conductor?
 
