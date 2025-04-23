@@ -1,5 +1,7 @@
 package uberto.backendgrupo72025
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import uberto.backendgrupo72025.domain.*
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -18,6 +20,9 @@ class UbertoBootstrap(
     val conductorRepository: ConductorRepository,
     val usuarioService: UsuarioService
     ) : InitializingBean {
+
+
+    val logger: Logger = LoggerFactory.getLogger(UbertoBootstrap::class.java)
 
     override fun afterPropertiesSet() {
         crearUsuarios()
