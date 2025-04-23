@@ -9,7 +9,7 @@ import uberto.backendgrupo72025.service.UsuarioService
 
 
 @RestController
-@CrossOrigin("*")
+//@CrossOrigin("*")
 class UsuarioController(@Autowired val userService: UsuarioService) {
 
     @PostMapping("/usuarioLogin")

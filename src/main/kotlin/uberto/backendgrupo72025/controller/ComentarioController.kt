@@ -9,7 +9,7 @@ import uberto.backendgrupo72025.service.UsuarioService
 import uberto.backendgrupo72025.service.ViajeService
 
 @RestController
-@CrossOrigin("*")
+//@CrossOrigin("*")
 class ComentarioController(
     @Autowired val comentarioService: ComentarioService,
     @Autowired val viajeService: ViajeService,

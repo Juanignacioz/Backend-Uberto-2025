@@ -20,5 +20,5 @@ spring:
             ddl-auto: create-drop
 
 security:
-    secret-key: cd372fb85148700fa88095e3492d3f9f5beb43e555e5ff26d95f5a6adc36f8e6
+    secret-key: 8bcc50a89968cd9dfb5f5421a1896dfe4b66a03082d3d47499739d4035a4be8b1fe791b8cd99358ceac4bf71fdaba730b9dd6d41011efa9b641429e3416f9d013b5496b62a1061b9312054db8ca566af70c3da6ad0a6877a6ea8bcce14dd1378
     access-token-minutes: 300

@@ -8,7 +8,7 @@ import uberto.backendgrupo72025.service.ViajeService
 
 
 @RestController
-@CrossOrigin("*")
+//@CrossOrigin("*")
 class ViajeController(
     @Autowired val viajeService: ViajeService
 ) {

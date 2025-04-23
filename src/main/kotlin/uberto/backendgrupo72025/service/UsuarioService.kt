@@ -1,10 +1,12 @@
 package uberto.backendgrupo72025.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 import uberto.backendgrupo72025.dto.*
 import uberto.backendgrupo72025.domain.*
 import uberto.backendgrupo72025.repository.*
+import uberto.backendgrupo72025.security.TokenUtils
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -15,22 +17,30 @@ class UsuarioService(
     val viajeroRepository: ViajeroRepository,
     val conductorRepository: ConductorRepository,
     val viajeService: ViajeService,
-    val comentarioService: ComentarioService
+    val comentarioService: ComentarioService,
 ) {
+    @Autowired
+    lateinit var tokenUtils: TokenUtils
 
     fun getViajeroById(id: String?) = id?.let { viajeroRepository.findById(it).orElseThrow { NotFoundException("El viajero con id $id no fue encontrado") } }!!
 
     fun getConductorById(id: String?) = id?.let { conductorRepository.findById(it).orElseThrow { NotFoundException("El conductor con id $id no fue encontrado") } }!!
 
-    fun getUsuarioLogin(user: UsuarioLoginDTO): LoginDTO {
+    fun getUsuarioLogin(user: UsuarioLoginDTO): String? {
         var usuario: Usuario?
         usuario = viajeroRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia)
-        if (usuario != null) { return usuario.toLoginDTO() }
-        else {
-            usuario = conductorRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia)
-            return usuario?.toLoginDTO() ?: throw UnauthorizedException("Los datos ingresados son incorrectos")
-        }
+        if (usuario != null) { return tokenUtils.createToken(usuario.username, usuario.rol) }
+
+        usuario = conductorRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia) ?: throw CredencialesInvalidasException()
+        return tokenUtils.createToken(usuario.username, usuario.rol)
     }
+
+//    @jakarta.transaction.Transactional(jakarta.transaction.Transactional.TxType.NEVER)
+//    fun login(credencialesDTO: CredencialesDTO): String {
+//        val usuario = validarUsuario(credencialesDTO.usuario)
+//        usuario.validarCredenciales(credencialesDTO.password)
+//        return tokenUtils.createToken(credencialesDTO.usuario, usuario.roles.map { it.name })!!
+//    }
 
     fun getUsuarioPerfil(id: String?, esChofer: Boolean): PerfilDTO {
         return if (esChofer) {

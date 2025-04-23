@@ -10,6 +10,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import uberto.backendgrupo72025.domain.CredencialesInvalidasException
+import uberto.backendgrupo72025.domain.ROLES
 import uberto.backendgrupo72025.domain.TokenExpiradoException
 import java.util.*
 import kotlin.time.Duration.Companion.minutes
@@ -24,7 +25,7 @@ class TokenUtils {
 
     val logger: Logger = LoggerFactory.getLogger(TokenUtils::class.java)
 
-    fun createToken(nombre: String, roles: List<String>): String? {
+    fun createToken(nombre: String, rol : ROLES): String? {
         val longExpirationTime = accessTokenMinutes.minutes.inWholeMilliseconds
 
         val now = Date()
@@ -33,7 +34,7 @@ class TokenUtils {
             .subject(nombre)
             .issuedAt(now)
             .expiration(Date(now.time + longExpirationTime))
-            .claim("roles", roles)
+            .claim("roles", rol)
             .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()))
             .compact()
     }

@@ -95,6 +95,7 @@ class UbertoBootstrap(
         contrasenia = "pass1234",
         telefono = 111222333,
         esChofer = true,
+        rol= ROLES.CONDUCTOR,
         foto = "",
         vehiculo = vehiculoSimple,
         precioBaseDelViaje = 400.0
@@ -107,6 +108,7 @@ class UbertoBootstrap(
         contrasenia = "secure789",
         telefono = 444555666,
         esChofer = true,
+        rol= ROLES.CONDUCTOR,
         foto = "",
         vehiculo = vehiculoEjecutivo,
         precioBaseDelViaje = 600.0
@@ -119,6 +121,7 @@ class UbertoBootstrap(
         contrasenia = "mypass567",
         telefono = 777888999,
         esChofer = true,
+        rol= ROLES.CONDUCTOR,
         foto = "",
         vehiculo = vehiculoMoto,
         precioBaseDelViaje = 300.0
