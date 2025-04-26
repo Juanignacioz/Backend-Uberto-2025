@@ -48,8 +48,8 @@ class UbertoSecurityConfig {
             .authorizeHttpRequests { requests ->
                 requests
                     // Endpoints públicos
-                    .requestMatchers("/login").permitAll()
-                    .requestMatchers("/home").permitAll()
+                    .requestMatchers("/usuarioLogin").permitAll()
+                    .requestMatchers("/home").hasAnyAuthority(ROLES.VIAJERO.toString(), ROLES.CONDUCTOR.toString())
                     .requestMatchers("/error").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS).permitAll()
 
