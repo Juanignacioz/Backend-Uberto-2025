@@ -7,6 +7,7 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
+import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.stereotype.Component
 import uberto.backendgrupo72025.domain.CredencialesInvalidasException
@@ -25,21 +26,22 @@ class TokenUtils {
 
     val logger: Logger = LoggerFactory.getLogger(TokenUtils::class.java)
 
-    fun createToken(nombre: String, rol : ROLES): String? {
+    fun createToken(id: String?, rol : ROLES): String? {
         val longExpirationTime = accessTokenMinutes.minutes.inWholeMilliseconds
 
         val now = Date()
 
         return Jwts.builder()
-            .subject(nombre)
+            .subject(id)
             .issuedAt(now)
             .expiration(Date(now.time + longExpirationTime))
-            .claim("roles", rol)
+            .claim("rol", rol)
             .signWith(Keys.hmacShaKeyFor(secretKey.toByteArray()))
             .compact()
     }
 
-    fun getAuthentication(token: String): UsernamePasswordAuthenticationToken {
+    fun getAuthentication(bearerToken: String): UsernamePasswordAuthenticationToken {
+        val token = bearerToken.substringAfter("Bearer ")
         try {
             val secret = Keys.hmacShaKeyFor(secretKey.toByteArray())
             val claims = Jwts.parser()
@@ -54,10 +56,13 @@ class TokenUtils {
                 throw CredencialesInvalidasException()
             }
 
-            logger.info("Token decoded, user: " + claims.subject + " - roles: " + claims["roles"])
+            logger.info("Token decoded, user: " + claims.subject + " - rol: " + claims["rol"])
 
-            val roles = (claims["roles"] as List<*>).map { SimpleGrantedAuthority(it.toString()) }
-            return UsernamePasswordAuthenticationToken(claims.subject, null, roles)
+            val rol = claims.get("rol", String::class.java) ?: "VIAJERO"
+
+            // Creación de la lista de autoridades (Collection<GrantedAuthority>)
+            val authorities: Collection<GrantedAuthority> = listOf(SimpleGrantedAuthority("ROLE_$rol"))
+            return UsernamePasswordAuthenticationToken(claims.subject, null, authorities)
         } catch (expiredJwtException: ExpiredJwtException) {
             throw TokenExpiradoException()
         }

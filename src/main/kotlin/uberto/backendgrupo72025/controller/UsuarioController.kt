@@ -15,12 +15,11 @@ class UsuarioController(@Autowired val userService: UsuarioService) {
     @Operation(summary = "Devuelve un usuario que coincida user y pass")
     fun postUsuarioLoggin(@RequestBody user: UsuarioLoginDTO) = userService.getUsuarioLogin(user)
 
-    @GetMapping("/perfil/{id}")
+    @GetMapping("/perfil")
     @Operation(summary = "Devuelve los datos para el perfil")
     fun getUsuarioPerfil(
-        @PathVariable id: String,
-        @RequestParam esChofer: Boolean
-    ) = userService.getUsuarioPerfil(id, esChofer)
+        @RequestHeader("Authorization") bearerToken: String
+    ) = userService.getUsuarioPerfil(bearerToken)
 
     @PostMapping("/confirmar")
     @Operation(summary = "Contratar viaje")

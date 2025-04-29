@@ -31,6 +31,8 @@ import java.util.function.Supplier
 @EnableWebSecurity
 class UbertoSecurityConfig {
 
+    val viajero = ROLES.VIAJERO.toString()
+    val conductor= ROLES.CONDUCTOR.toString()
     @Autowired
     lateinit var jwtAuthorizationFilter: JWTAuthorizationFilter
 
@@ -49,7 +51,20 @@ class UbertoSecurityConfig {
                 requests
                     // Endpoints públicos
                     .requestMatchers("/usuarioLogin").permitAll()
-                    .requestMatchers("/home").hasAnyAuthority(ROLES.VIAJERO.toString(), ROLES.CONDUCTOR.toString())
+
+                    // viajeros
+                    .requestMatchers("/agregarAmigo").hasAuthority(viajero)
+                    .requestMatchers("/buscarAmigos").hasAuthority(viajero)
+                    .requestMatchers("/cargarSaldo").hasAuthority(viajero)
+                    .requestMatchers("/eliminarAmigo").hasAuthority(viajero)
+                    .requestMatchers("/home/buscar").hasAuthority(viajero)
+                    .requestMatchers("/confirmar").hasAuthority(viajero)
+                    .requestMatchers("/eliminarComentario").hasAuthority(viajero)
+                    .requestMatchers("/calificar").hasAuthority(viajero)
+
+                    // conductores
+
+
                     .requestMatchers("/error").permitAll()
                     .requestMatchers(HttpMethod.OPTIONS).permitAll()
 

@@ -22,7 +22,7 @@ class JWTAuthorizationFilter : OncePerRequestFilter() {
     @Autowired
     lateinit var usuarioService: UsuarioService
 
-    override fun doFilterInternal(
+    public override fun doFilterInternal(
         request: HttpServletRequest,
         response: HttpServletResponse,
         filterChain: FilterChain
@@ -30,8 +30,7 @@ class JWTAuthorizationFilter : OncePerRequestFilter() {
         try {
             val bearerToken = request.getHeader("Authorization")
             if (bearerToken != null && bearerToken.startsWith("Bearer ")) {
-                val token = bearerToken.substringAfter("Bearer ")
-                val usernamePAT = tokenUtils.getAuthentication(token)
+                val usernamePAT = tokenUtils.getAuthentication(bearerToken)
                 usuarioService.validarUsuario(usernamePAT.name)
                 SecurityContextHolder.getContext().authentication = usernamePAT
                 logger.info("username PAT: $usernamePAT")

@@ -24,19 +24,17 @@ class ViajeController(
         @RequestBody filtroDTO: FiltroDTO
     ) = viajeService.getViajesConductorFiltrados(id, filtroDTO)
 
-    @GetMapping("/viajesRealizados/{idUsuario}")
+    @GetMapping("/viajesRealizados")
     @Operation(summary = "Devuelve los viajes realizados")
     fun getViajesRealizadosPorUsuario(
-        @PathVariable idUsuario: String,
-        @RequestParam esChofer: Boolean
-    ) = viajeService.getViajesRealizadosByUsuario(idUsuario, esChofer)
+        @RequestHeader("Authorization") bearerToken: String
+    ) = viajeService.getViajesRealizadosByUsuario(bearerToken)
 
-    @GetMapping("/viajesPendientes/{idUsuario}")
+    @GetMapping("/viajesPendientes")
     @Operation(summary = "Devuelve los viajes Pendientes")
     fun getViajesPendientesPorUsuario(
-        @PathVariable idUsuario: String,
-        @RequestParam esChofer: Boolean
-    ) = viajeService.getViajesPendientesByUsuario(idUsuario, esChofer)
+        @RequestHeader("Authorization") bearerToken: String
+    ) = viajeService.getViajesPendientesByUsuario(bearerToken)
 
 
 }

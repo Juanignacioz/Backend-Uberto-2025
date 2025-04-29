@@ -20,7 +20,7 @@ class ComentarioController(
     @Operation(summary = "Obtiene todos los comentarios")
     fun getAllComentarios() = comentarioService.getAll()
 
-    @GetMapping("/comentario/{id}")
+    @GetMapping("/comentario")
     @Operation(summary = "Devuelve los comentarios por usuario")
     fun getComentariosPorUsuario(
         @PathVariable id: String,

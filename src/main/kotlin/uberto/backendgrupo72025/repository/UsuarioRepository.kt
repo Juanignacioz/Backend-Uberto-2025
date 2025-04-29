@@ -11,8 +11,6 @@ import java.util.*
 @Repository
 interface ViajeroRepository  : CrudRepository<Viajero, String?> {
 
-    fun existsByUsername(username: String): Boolean
-
     fun findByUsernameAndContrasenia(username: String, contrasenia: String): Viajero?
 
     @EntityGraph(attributePaths = ["amigos"])
@@ -37,8 +35,6 @@ interface ViajeroRepository  : CrudRepository<Viajero, String?> {
 
 @Repository
 interface ConductorRepository  : CrudRepository<Conductor, String?> {
-
-    fun existsByUsername(username: String): Boolean
 
     fun findByUsernameAndContrasenia(username: String, contrasenia: String): Conductor?
 

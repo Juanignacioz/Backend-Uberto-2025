@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service
 import uberto.backendgrupo72025.dto.*
 import uberto.backendgrupo72025.domain.*
 import uberto.backendgrupo72025.repository.*
+import uberto.backendgrupo72025.security.JWTAuthorizationFilter
 import uberto.backendgrupo72025.security.TokenUtils
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -29,10 +30,10 @@ class UsuarioService(
     fun getUsuarioLogin(user: UsuarioLoginDTO): String? {
         var usuario: Usuario?
         usuario = viajeroRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia)
-        if (usuario != null) { return tokenUtils.createToken(usuario.username, usuario.rol) }
+        if (usuario != null) { return tokenUtils.createToken(usuario.id, usuario.rol) }
 
         usuario = conductorRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia) ?: throw CredencialesInvalidasException()
-        return tokenUtils.createToken(usuario.username, usuario.rol)
+        return tokenUtils.createToken(usuario.id, usuario.rol)
     }
 
 //    @jakarta.transaction.Transactional(jakarta.transaction.Transactional.TxType.NEVER)
@@ -42,11 +43,15 @@ class UsuarioService(
 //        return tokenUtils.createToken(credencialesDTO.usuario, usuario.roles.map { it.name })!!
 //    }
 
-    fun getUsuarioPerfil(id: String?, esChofer: Boolean): PerfilDTO {
+    fun getUsuarioPerfil(bearerToken: String): PerfilDTO {
+        val authentication = tokenUtils.getAuthentication(bearerToken)
+        val userID = authentication.name
+        val esChofer = authentication.authorities.any { it.authority.equals("VIAJERO", ignoreCase = false)  }
+
         return if (esChofer) {
-            getConductorById(id).toPerfilDTO()
+            getConductorById(userID).toPerfilDTO()
         } else {
-            (viajeroRepository.findViajeroPerfilById(id)).toPerfilDTO()
+            (viajeroRepository.findViajeroPerfilById(userID)).toPerfilDTO()
         }
     }
 
@@ -200,8 +205,8 @@ class UsuarioService(
         viajeService.save(viaje)
     }
 
-    fun validarUsuario(nombreUsuario: String) {
-        if (viajeroRepository.existsByUsername(nombreUsuario) || conductorRepository.existsByUsername(nombreUsuario)) {
+    fun validarUsuario(idUsuario: String) {
+        if (viajeroRepository.existsById(idUsuario) || conductorRepository.existsById(idUsuario)) {
             return
         }
         else {

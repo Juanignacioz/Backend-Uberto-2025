@@ -1,5 +1,6 @@
 package uberto.backendgrupo72025.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uberto.backendgrupo72025.dto.*
@@ -8,12 +9,15 @@ import uberto.backendgrupo72025.domain.NotFoundException
 import uberto.backendgrupo72025.domain.Viaje
 import uberto.backendgrupo72025.domain.Viajero
 import uberto.backendgrupo72025.repository.ViajeRepository
+import uberto.backendgrupo72025.security.TokenUtils
 
 @Service
 class ViajeService(
     val viajeRepository: ViajeRepository,
     val comentarioService: ComentarioService
 ) {
+    @Autowired
+    lateinit var tokenUtils: TokenUtils
 
     fun getAllViajes() = viajeRepository.findAll()
 
@@ -27,16 +31,21 @@ class ViajeService(
         return viaje
     }
 
-    fun getViajesRealizadosByUsuario(idUsuario: String?, esChofer: Boolean): ViajesCompletadosDTO {
+    fun getViajesRealizadosByUsuario(bearerToken : String): ViajesCompletadosDTO {
+        val authentication = tokenUtils.getAuthentication(bearerToken)
+        val userID = authentication.name
+        val esChofer = authentication.authorities.any { it.authority.equals("VIAJERO", ignoreCase = false)  }
+
         lateinit var viajesRealizadosDTO: List<ViajeDTO>
         lateinit var viajesRealizados: List<Viaje>
         var totalFacturado = 0.0
+
          if (esChofer) {
-             viajesRealizados = viajeRepository.findByConductorIdAndFechaFinBefore(idUsuario)
+             viajesRealizados = viajeRepository.findByConductorIdAndFechaFinBefore(userID)
              viajesRealizadosDTO = viajesRealizados.map { it.toViajeDTO(it.viajero.nombreYApellido(),it.viajero.foto, viajeCalificable(it)) }
-             totalFacturado = getTotalFacturado(idUsuario)
+             totalFacturado = getTotalFacturado(userID)
         } else {
-             viajesRealizados = viajeRepository.findByViajeroIdAndFechaFinBefore(idUsuario)
+             viajesRealizados = viajeRepository.findByViajeroIdAndFechaFinBefore(userID)
              viajesRealizadosDTO = viajesRealizados.map { it.toViajeDTO(it.conductor.nombreYApellido(), it.conductor.foto, viajeCalificable(it)) }
         }
         return ViajesCompletadosDTO(viajesRealizadosDTO, totalFacturado)
@@ -46,13 +55,17 @@ class ViajeService(
 
     fun viajeCalificable(viaje: Viaje) = !viaje.viajePendiente() && !viaje.viajeComentado
 
-    fun getViajesPendientesByUsuario(idUsuario: String?, esChofer: Boolean): List<ViajeDTO> {
+    fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> {
+        val authentication = tokenUtils.getAuthentication(bearerToken)
+        val userID = authentication.name
+        val esChofer = authentication.authorities.any { it.authority.equals("VIAJERO", ignoreCase = false)  }
+
         lateinit var viajesPendientes: List<Viaje>
         if (esChofer) {
-            viajesPendientes = viajeRepository.findByConductorIdAndFechaFinAfter(idUsuario)
+            viajesPendientes = viajeRepository.findByConductorIdAndFechaFinAfter(userID)
             return viajesPendientes.map { it.toViajeDTO(it.viajero.nombreYApellido(), it.viajero.foto, viajeCalificable(it)) }
         } else {
-            viajesPendientes = viajeRepository.findByViajeroIdAndFechaFinAfter(idUsuario)
+            viajesPendientes = viajeRepository.findByViajeroIdAndFechaFinAfter(userID)
             return viajesPendientes.map { it.toViajeDTO(it.conductor.nombreYApellido(),it.conductor.foto, viajeCalificable(it)) }
         }
     }
