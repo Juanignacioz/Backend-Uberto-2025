@@ -45,7 +45,6 @@ class UsuarioService(
 
     fun  getUsuarioPerfil(bearerToken: String): PerfilDTO {
         val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
-
         return if (esChofer) {
             getConductorById(userID).toPerfilDTO()
         } else {
@@ -54,14 +53,15 @@ class UsuarioService(
     }
 
     @Transactional
-    fun actualizarImagen(id: String?, imagen: String, esChofer: Boolean): String {
+    fun actualizarImagen(bearerToken: String, imagen: String): String {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
         lateinit var usuario: Usuario
         if (esChofer) {
-            usuario = getConductorById(id)
+            usuario = getConductorById(userID)
             usuario.foto = imagen
             conductorRepository.save(usuario)
         } else {
-            usuario = getViajeroById(id)
+            usuario = getViajeroById(userID)
             usuario.foto = imagen
             viajeroRepository.save(usuario)
         }
@@ -103,11 +103,12 @@ class UsuarioService(
     }
 
     @Transactional
-    fun actualizarUsuario(id: String?, usuarioDTO: UsuarioDTO): PerfilDTO {
-        return if (usuarioDTO.esChofer) {
-            actualizarChofer(id, usuarioDTO.toPerfilChoferDTO())
+    fun actualizarUsuario(bearerToken: String, usuarioDTO: UsuarioDTO): PerfilDTO {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        return if (esChofer) {
+            actualizarChofer(userID, usuarioDTO.toPerfilChoferDTO())
         } else {
-            actualizarViajero(id, usuarioDTO.toPerfilViajeroDTO())
+            actualizarViajero(userID, usuarioDTO.toPerfilViajeroDTO())
         }
     }
 
@@ -119,8 +120,9 @@ class UsuarioService(
     }
 
     @Transactional
-    fun agregarAmigo(idViajero: String?, idAmigo: String?): AmigoDTO {
-        val viajero = getViajeroById(idViajero)
+    fun agregarAmigo(bearerToken: String, idAmigo: String?): AmigoDTO {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val viajero = getViajeroById(userID)
         val amigo = getViajeroById(idAmigo)
         viajero.agregarAmigo(amigo)
         viajeroRepository.save(viajero)
@@ -128,15 +130,18 @@ class UsuarioService(
     }
 
     @Transactional
-    fun eliminarAmigo(idViajero: String?, idAmigo: String?) {
-        val viajero = getViajeroById(idViajero)
+    fun eliminarAmigo(bearerToken: String, idAmigo: String?) {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val viajero = getViajeroById(userID)
         val amigo = getViajeroById(idAmigo)
         viajero.eliminarAmigo(amigo)
         viajeroRepository.save(viajero)
     }
 
-    fun getViajerosParaAgregarAmigo(id: String?, query: String) =
-        viajeroRepository.buscarViajerosNoAmigos(id, query).map { it.toAmigoDTO() }
+    fun getViajerosParaAgregarAmigo(bearerToken: String, query: String): List<AmigoDTO> {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        return viajeroRepository.buscarViajerosNoAmigos(userID, query).map { it.toAmigoDTO() }
+    }
 
 
     fun validarSaldoPositivo(monto: Double) {
@@ -157,8 +162,9 @@ class UsuarioService(
     }
 
     @Transactional
-    fun cargarSaldo(id: String?, esChofer: Boolean, monto: Double) {
-        val usuario = getViajeroById(id)
+    fun cargarSaldo(bearerToken: String, monto: Double) {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val usuario = getViajeroById(userID)
         validarCargaDeSaldo(monto, esChofer)
         usuario.agregarSaldo(monto)
         viajeroRepository.save(usuario)

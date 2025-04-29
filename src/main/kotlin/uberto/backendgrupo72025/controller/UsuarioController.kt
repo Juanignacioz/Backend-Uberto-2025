@@ -29,43 +29,46 @@ class UsuarioController(@Autowired val userService: UsuarioService) {
     @Operation(summary = "Devuelve los choferes disponibles")
     fun getChoferesDisponiles(@RequestBody busquedaDTO: BusquedaDTO) = userService.getChoferesDisponibles(busquedaDTO)
 
-    @DeleteMapping("/eliminarAmigo/{userId}/{friendId}")
+    @DeleteMapping("/eliminarAmigo/{friendId}")
     @Operation(summary = "Elimina a un amigo de la lista de amigos del viajero")
     fun eliminarAmigo(
-        @PathVariable userId: String,
+        @RequestHeader("Authorization") bearerToken: String,
         @PathVariable friendId: String
-    ) = userService.eliminarAmigo(userId, friendId)
+    ) = userService.eliminarAmigo(bearerToken, friendId)
 
-    @PatchMapping("/actualizarUsuario/{id}")
+    @PatchMapping("/actualizarUsuario")
     @Operation(summary = "Actualiza los datos del usuario")
-    fun actualizarUsuario(@PathVariable id: String, @RequestBody usuarioDTO: UsuarioDTO) =
-        userService.actualizarUsuario(id, usuarioDTO)
+    fun actualizarUsuario(
+        @RequestHeader("Authorization") bearerToken: String,
+        @RequestBody usuarioDTO: UsuarioDTO) =
+        userService.actualizarUsuario(bearerToken, usuarioDTO)
 
-    @GetMapping("/buscarAmigos/{id}")
+    @GetMapping("/buscarAmigos")
     @Operation(summary = "Busca los usuarios para agregar como amigos")
     fun buscarAmigos(
-        @PathVariable id: String,
+        @RequestHeader("Authorization") bearerToken: String,
         @RequestParam query: String
-    ) = userService.getViajerosParaAgregarAmigo(id, query)
+    ) = userService.getViajerosParaAgregarAmigo(bearerToken, query)
 
-    @PutMapping("/agregarAmigo/{userId}/{friendId}")
+    @PutMapping("/agregarAmigo/{friendId}")
     @Operation(summary = "agrega a un amigo de la lista de amigos del viajero")
     fun agregarAmigo(
-        @PathVariable userId: String,
+        @RequestHeader("Authorization") bearerToken: String,
         @PathVariable friendId: String
-    ) = userService.agregarAmigo(userId, friendId)
+    ) = userService.agregarAmigo(bearerToken, friendId)
 
-    @PostMapping("/cargarSaldo/{id}")
+    @PostMapping("/cargarSaldo")
     @Operation(summary = "Carga saldo a un usuario")
     fun cargarSaldo(
-        @PathVariable id: String,
-        @RequestParam esChofer: Boolean,
+        @RequestHeader("Authorization") bearerToken: String,
         @RequestParam monto: Double
-    ) = userService.cargarSaldo(id, esChofer, monto)
+    ) = userService.cargarSaldo(bearerToken, monto)
 
-    @PatchMapping("/actualizarImagen/{id}")
+    @PatchMapping("/actualizarImagen")
     @Operation(summary = "Actualiza los datos del usuario")
-    fun actualizarImagen(@PathVariable id: String, @RequestParam esChofer: Boolean, @RequestParam imagen: String) =
-        userService.actualizarImagen(id, imagen, esChofer)
+    fun actualizarImagen(
+        @RequestHeader("Authorization") bearerToken: String,
+        @RequestParam imagen: String) =
+        userService.actualizarImagen(bearerToken, imagen)
 
 }

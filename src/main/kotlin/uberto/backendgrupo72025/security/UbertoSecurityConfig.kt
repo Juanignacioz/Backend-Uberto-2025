@@ -51,12 +51,14 @@ class UbertoSecurityConfig {
                 requests
                     // Endpoints públicos
                     .requestMatchers("/usuarioLogin").permitAll()
+                    .requestMatchers("/error").permitAll()
+                    .requestMatchers(HttpMethod.OPTIONS).permitAll()
 
                     // viajeros
                     .requestMatchers("/agregarAmigo").hasAuthority(viajero)
+                    .requestMatchers("/eliminarAmigo").hasAuthority(viajero)
                     .requestMatchers("/buscarAmigos").hasAuthority(viajero)
                     .requestMatchers("/cargarSaldo").hasAuthority(viajero)
-                    .requestMatchers("/eliminarAmigo").hasAuthority(viajero)
                     .requestMatchers("/home/buscar").hasAuthority(viajero)
                     .requestMatchers("/confirmar").hasAuthority(viajero)
                     .requestMatchers("/eliminarComentario").hasAuthority(viajero)
@@ -66,9 +68,6 @@ class UbertoSecurityConfig {
                     // conductores
                     .requestMatchers("/filtrar").hasAuthority(conductor)
 
-
-                    .requestMatchers("/error").permitAll()
-                    .requestMatchers(HttpMethod.OPTIONS).permitAll()
 
                     // Endpoints de administración
 //                    .requestMatchers(HttpMethod.POST, "/heladerias").hasAuthority(ROLES.ADMIN.name)
