@@ -61,11 +61,18 @@ class TokenUtils {
             val rol = claims.get("rol", String::class.java) ?: "VIAJERO"
 
             // Creación de la lista de autoridades (Collection<GrantedAuthority>)
-            val authorities: Collection<GrantedAuthority> = listOf(SimpleGrantedAuthority("ROLE_$rol"))
+            val authorities: Collection<GrantedAuthority> = listOf(SimpleGrantedAuthority(rol))
             return UsernamePasswordAuthenticationToken(claims.subject, null, authorities)
         } catch (expiredJwtException: ExpiredJwtException) {
             throw TokenExpiradoException()
         }
+    }
+
+    fun authenticate(bearerToken: String): Pair<String, Boolean> {
+        val authentication = getAuthentication(bearerToken)
+        val userID = authentication.name
+        val esChofer = authentication.authorities.any { it.authority.equals("CONDUCTOR", ignoreCase = false) }
+        return Pair(userID, esChofer)
     }
 }
 

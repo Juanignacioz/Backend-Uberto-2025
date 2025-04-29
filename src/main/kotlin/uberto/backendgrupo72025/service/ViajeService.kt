@@ -32,9 +32,7 @@ class ViajeService(
     }
 
     fun getViajesRealizadosByUsuario(bearerToken : String): ViajesCompletadosDTO {
-        val authentication = tokenUtils.getAuthentication(bearerToken)
-        val userID = authentication.name
-        val esChofer = authentication.authorities.any { it.authority.equals("VIAJERO", ignoreCase = false)  }
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
 
         lateinit var viajesRealizadosDTO: List<ViajeDTO>
         lateinit var viajesRealizados: List<Viaje>
@@ -56,9 +54,7 @@ class ViajeService(
     fun viajeCalificable(viaje: Viaje) = !viaje.viajePendiente() && !viaje.viajeComentado
 
     fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> {
-        val authentication = tokenUtils.getAuthentication(bearerToken)
-        val userID = authentication.name
-        val esChofer = authentication.authorities.any { it.authority.equals("VIAJERO", ignoreCase = false)  }
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
 
         lateinit var viajesPendientes: List<Viaje>
         if (esChofer) {

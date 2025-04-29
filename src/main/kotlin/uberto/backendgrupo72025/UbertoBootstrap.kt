@@ -28,7 +28,7 @@ class UbertoBootstrap(
         crearUsuarios()
         crearChoferes()
         crearViajes()
-        crearComentarios()
+//        crearComentarios()
     }
 
     // VIAJEROS
@@ -168,20 +168,20 @@ class UbertoBootstrap(
     }
 
     // COMENTARIOS
-    fun crearComentarios() {
-        val viajesRealizados = viajeRepository.findAll().filter { it.fechaInicio.isBefore(LocalDateTime.now()) }
-        val comentarios = mutableListOf<Comentario>()
-
-        viajesRealizados.take(5).forEach {
-            comentarios.add(
-                Comentario(
-                    viaje = it,
-                    estrellas = (3..5).random(),
-                    mensaje = "Comentario sobre el viaje de ${it.viajero.nombre} con ${it.conductor.nombre}.",
-                    fecha = LocalDate.now()
-                )
-            )
-        }
-        comentarios.forEach { usuarioService.calificarViaje(it.viaje.viajero.id, CalificacionDTO(it.viaje.id, it.estrellas, it.mensaje)) }
-    }
+//    fun crearComentarios() {
+//        val viajesRealizados = viajeRepository.findAll().filter { it.fechaInicio.isBefore(LocalDateTime.now()) }
+//        val comentarios = mutableListOf<Comentario>()
+//
+//        viajesRealizados.take(5).forEach {
+//            comentarios.add(
+//                Comentario(
+//                    viaje = it,
+//                    estrellas = (3..5).random(),
+//                    mensaje = "Comentario sobre el viaje de ${it.viajero.nombre} con ${it.conductor.nombre}.",
+//                    fecha = LocalDate.now()
+//                )
+//            )
+//        }
+//        comentarios.forEach { usuarioService.calificarViaje(it.viaje.viajero.id, CalificacionDTO(it.viaje.id, it.estrellas, it.mensaje)) }
+//    }
 }

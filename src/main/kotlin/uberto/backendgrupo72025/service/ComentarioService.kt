@@ -1,33 +1,38 @@
 package uberto.backendgrupo72025.service
 
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uberto.backendgrupo72025.dto.CalificacionDTO
 import uberto.backendgrupo72025.dto.ComentarioDTO
 import uberto.backendgrupo72025.dto.toComentario
 import uberto.backendgrupo72025.dto.toComentarioDTO
 import uberto.backendgrupo72025.domain.*
 import uberto.backendgrupo72025.repository.ComentarioRepository
+import uberto.backendgrupo72025.security.TokenUtils
 
 @Service
 class ComentarioService(
     val comentarioRepository: ComentarioRepository
 ) {
+    @Autowired
+    lateinit var tokenUtils: TokenUtils
 
     fun getAll() = comentarioRepository.findAll()
 
     fun getComentarioById(idComentario: String?) = idComentario?.let { comentarioRepository.findById(it).orElseThrow{ NotFoundException("No se encontro el comentario con id $it") } }!!
 
-    fun getComentarios(idUsuario: String, esChofer: Boolean): List<ComentarioDTO> {
+    fun getComentarios(bearerToken : String): List<ComentarioDTO> {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
         return if (esChofer) {
-            comentarioRepository.findByViajeConductorIdAndActive(idUsuario).map { it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto) }
+            comentarioRepository.findByViajeConductorIdAndActive(userID).map { it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto) }
         } else {
-            comentarioRepository.findByViajeViajeroIdAndActive(idUsuario).map { it.toComentarioDTO(it.viaje.conductor.nombreYApellido(), it.viaje.conductor.foto) }
+            comentarioRepository.findByViajeViajeroIdAndActive(userID).map { it.toComentarioDTO(it.viaje.conductor.nombreYApellido(), it.viaje.conductor.foto) }
         }
     }
 
-    fun calificar(calificacion: CalificacionDTO, viaje: Viaje, idUsuario: String?): Comentario {
-        validarPuedeCalificar(idUsuario, viaje)
+    fun calificar(calificacion: CalificacionDTO, viaje: Viaje, userID: String): Comentario {
+        validarPuedeCalificar(userID, viaje)
         val comentario = calificacion.toComentario(viaje)
         comentarioRepository.save(comentario)
         return comentario
@@ -48,8 +53,8 @@ class ComentarioService(
 
     fun viajeCalificado(idViaje : String) = comentarioRepository.existsByViajeIdAndActive(idViaje, true)
 
-    fun eliminarComentario(idViajero: String?, comentario: Comentario) {
-        validarEliminarComentario(idViajero, comentario)
+    fun eliminarComentario(userID: String, comentario: Comentario) {
+        validarEliminarComentario(userID, comentario)
         comentario.active = false
         comentarioRepository.save(comentario)
     }
@@ -58,6 +63,5 @@ class ComentarioService(
         if (idViajero != comentario.viaje.viajero.id) throw BadRequestException("No se puede eliminar un comentario realizado por otro usuario")
     }
 
-    fun getCalificacionByConductor(idConductor: String?) = comentarioRepository.promedioEstrellasByConductor(idConductor)
-
+    fun getCalificacionByConductor(conductorID: String?) = comentarioRepository.promedioEstrellasByConductor(conductorID)
 }

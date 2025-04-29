@@ -43,10 +43,8 @@ class UsuarioService(
 //        return tokenUtils.createToken(credencialesDTO.usuario, usuario.roles.map { it.name })!!
 //    }
 
-    fun getUsuarioPerfil(bearerToken: String): PerfilDTO {
-        val authentication = tokenUtils.getAuthentication(bearerToken)
-        val userID = authentication.name
-        val esChofer = authentication.authorities.any { it.authority.equals("VIAJERO", ignoreCase = false)  }
+    fun  getUsuarioPerfil(bearerToken: String): PerfilDTO {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
 
         return if (esChofer) {
             getConductorById(userID).toPerfilDTO()
@@ -197,9 +195,11 @@ class UsuarioService(
     }
 
     @Transactional
-    fun calificarViaje(idUsuario: String?, calificacion: CalificacionDTO) {
+    fun calificarViaje(bearerToken: String, calificacion: CalificacionDTO) {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+
         val viaje = viajeService.getViajeById(calificacion.idViaje)
-        comentarioService.calificar(calificacion, viaje, idUsuario)
+        comentarioService.calificar(calificacion, viaje, userID)
         viaje.viajeComentado=true
         actualizarCalificacion(viaje.conductor)
         viajeService.save(viaje)
@@ -215,9 +215,10 @@ class UsuarioService(
     }
 
     @Transactional
-    fun eliminarComentario(idViajero: String?, idComentario: String?) {
+    fun eliminarComentario(bearerToken: String, idComentario: String?) {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
         val comentario = comentarioService.getComentarioById(idComentario)
-        comentarioService.eliminarComentario(idViajero, comentario)
+        comentarioService.eliminarComentario(userID, comentario)
         val viaje=comentario.viaje
         viaje.viajeComentado=false
         actualizarCalificacion(comentario.viaje.conductor)
