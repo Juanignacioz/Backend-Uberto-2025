@@ -182,8 +182,9 @@ class UsuarioService(
         !viajeService.getViajesByUsuarioId(idConductor).any { it.seSolapan(fechaNueva, duracion) }
 
     @Transactional
-    fun contratarViaje(viajeDTO: ViajeDTO) {
-        val viajero = getViajeroById(viajeDTO.idViajero)
+    fun contratarViaje(viajeDTO: ViajeDTO,bearerToken:String) {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val viajero = getViajeroById(userID)
         val conductor = getConductorById(viajeDTO.idConductor)
         validarPuedeRealizarseViaje(viajero, conductor.id, viajeDTO)
         val viaje = viajeService.crearViaje(viajeDTO, viajero, conductor)

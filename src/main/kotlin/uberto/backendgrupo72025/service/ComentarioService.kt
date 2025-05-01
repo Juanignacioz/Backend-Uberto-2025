@@ -30,6 +30,10 @@ class ComentarioService(
             comentarioRepository.findByViajeViajeroIdAndActive(userID).map { it.toComentarioDTO(it.viaje.conductor.nombreYApellido(), it.viaje.conductor.foto) }
         }
     }
+    fun getComentariosConfirmar(bearerToken : String,id: String): List<ComentarioDTO> {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        return comentarioRepository.findByViajeConductorIdAndActive(id).map { it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto) }
+    }
 
     fun calificar(calificacion: CalificacionDTO, viaje: Viaje, userID: String): Comentario {
         validarPuedeCalificar(userID, viaje)

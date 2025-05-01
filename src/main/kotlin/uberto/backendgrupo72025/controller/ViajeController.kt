@@ -17,12 +17,12 @@ class ViajeController(
     @Operation(summary = "crear viaje")
     fun getAllViajes() = viajeService.getAllViajes()
 
-    @PostMapping("/filtrar/{id}")
+    @PostMapping("/filtrar")
     @Operation(summary = "Devuelve los viajes pendientes filtrados para el home chofer")
     fun getViajesFiltrados(
-        @PathVariable id: String,
+        @RequestHeader("Authorization") bearerToken: String,
         @RequestBody filtroDTO: FiltroDTO
-    ) = viajeService.getViajesConductorFiltrados(id, filtroDTO)
+    ) = viajeService.getViajesConductorFiltrados(bearerToken,filtroDTO)
 
     @GetMapping("/viajesRealizados")
     @Operation(summary = "Devuelve los viajes realizados")

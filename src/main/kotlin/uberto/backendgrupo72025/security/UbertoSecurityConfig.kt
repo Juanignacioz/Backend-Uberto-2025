@@ -66,6 +66,7 @@ class UbertoSecurityConfig {
                     .requestMatchers("/viajesPendientes").hasAuthority(viajero)
 
                     // conductores
+                    //.requestMatchers(HttpMethod.POST, "/filtrar").hasAuthority(conductor)
                     .requestMatchers("/filtrar").hasAuthority(conductor)
 
 

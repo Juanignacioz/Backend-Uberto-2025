@@ -20,6 +20,13 @@ class ComentarioController(
     @Operation(summary = "Obtiene todos los comentarios")
     fun getAllComentarios() = comentarioService.getAll()
 
+    @GetMapping("/comentariosParaConfirmar/{id}")
+    @Operation(summary = "Obtiene todos los comentarios para confirmar")
+    fun getAllComentariosParaConfirmar(
+        @RequestHeader("Authorization") bearerToken: String,
+        @PathVariable id: String
+    ) = comentarioService.getComentariosConfirmar(bearerToken,id)
+
     @GetMapping("/comentario")
     @Operation(summary = "Devuelve los comentarios por usuario")
     fun getComentariosPorUsuario(

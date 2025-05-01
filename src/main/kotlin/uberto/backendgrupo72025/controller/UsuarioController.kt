@@ -23,7 +23,10 @@ class UsuarioController(@Autowired val userService: UsuarioService) {
 
     @PostMapping("/confirmar")
     @Operation(summary = "Contratar viaje")
-    fun contratarViaje(@RequestBody viaje: ViajeDTO) = userService.contratarViaje(viaje)
+    fun contratarViaje(
+        @RequestBody viaje: ViajeDTO,
+        @RequestHeader("Authorization") bearerToken: String,
+    ) = userService.contratarViaje(viaje,bearerToken)
 
     @PostMapping("/home/buscar")
     @Operation(summary = "Devuelve los choferes disponibles")
@@ -40,7 +43,8 @@ class UsuarioController(@Autowired val userService: UsuarioService) {
     @Operation(summary = "Actualiza los datos del usuario")
     fun actualizarUsuario(
         @RequestHeader("Authorization") bearerToken: String,
-        @RequestBody usuarioDTO: UsuarioDTO) =
+        @RequestBody usuarioDTO: UsuarioDTO
+    ) =
         userService.actualizarUsuario(bearerToken, usuarioDTO)
 
     @GetMapping("/buscarAmigos")
@@ -68,7 +72,8 @@ class UsuarioController(@Autowired val userService: UsuarioService) {
     @Operation(summary = "Actualiza los datos del usuario")
     fun actualizarImagen(
         @RequestHeader("Authorization") bearerToken: String,
-        @RequestParam imagen: String) =
+        @RequestParam imagen: String
+    ) =
         userService.actualizarImagen(bearerToken, imagen)
 
 }
