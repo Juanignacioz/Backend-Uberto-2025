@@ -110,7 +110,7 @@ class UbertoSecurityConfig {
                 registry.addMapping("/**")
                     .allowedOrigins("http://localhost:5173")
                     .allowedHeaders("*")
-                    .allowedMethods("POST", "GET", "PUT", "DELETE", "OPTIONS")
+                    .allowedMethods("POST", "GET", "PUT", "DELETE", "OPTIONS", "PATCH")
                     .allowCredentials(true)
                     .maxAge(3600)
             }
