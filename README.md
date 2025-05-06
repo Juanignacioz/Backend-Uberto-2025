@@ -7,3 +7,4 @@
 > [!IMPORTANT]  
 > Parte 2: Componentes en la base de datos, Se pide que implementen componentes en la base de datos para resolver los siguientes requerimientos:
 
+  ![Punto 2](https://github.com/phm-unsam/backend-2025-grupo7/blob/Security/Punto%202%20.sql)
