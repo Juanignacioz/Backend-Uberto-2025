@@ -25,6 +25,9 @@ abstract class Usuario(
     var telefono: Int = 0,
     @Column(nullable = false)
     val esChofer: Boolean = false,
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    val rol: ROLES = ROLES.VIAJERO,
     @Column
     var foto: String = ""
 ) {

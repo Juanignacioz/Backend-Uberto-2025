@@ -25,12 +25,13 @@ abstract class Conductor(
     contrasenia: String = "",
     telefono: Int = 0,
     esChofer: Boolean = true,
+    rol: ROLES,
     foto: String = "",
     @OneToOne (cascade = [(CascadeType.ALL)])
     var vehiculo: Vehiculo = Vehiculo(),
     @Column
     var precioBaseDelViaje: Double = 0.0
-) : Usuario(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer,foto) {
+) : Usuario(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer, rol, foto) {
 
     @Column
     var calificacion: Double = 0.0

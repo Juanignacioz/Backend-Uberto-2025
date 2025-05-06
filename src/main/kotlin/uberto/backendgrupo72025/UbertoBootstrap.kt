@@ -1,5 +1,7 @@
 package uberto.backendgrupo72025
 
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 import uberto.backendgrupo72025.domain.*
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.beans.factory.annotation.Autowired
@@ -19,11 +21,14 @@ class UbertoBootstrap(
     val usuarioService: UsuarioService
     ) : InitializingBean {
 
+
+    val logger: Logger = LoggerFactory.getLogger(UbertoBootstrap::class.java)
+
     override fun afterPropertiesSet() {
         crearUsuarios()
         crearChoferes()
         crearViajes()
-        crearComentarios()
+//        crearComentarios()
     }
 
     // VIAJEROS
@@ -95,6 +100,7 @@ class UbertoBootstrap(
         contrasenia = "pass1234",
         telefono = 111222333,
         esChofer = true,
+        rol= ROLES.CONDUCTOR,
         foto = "",
         vehiculo = vehiculoSimple,
         precioBaseDelViaje = 400.0
@@ -107,6 +113,7 @@ class UbertoBootstrap(
         contrasenia = "secure789",
         telefono = 444555666,
         esChofer = true,
+        rol= ROLES.CONDUCTOR,
         foto = "",
         vehiculo = vehiculoEjecutivo,
         precioBaseDelViaje = 600.0
@@ -119,6 +126,7 @@ class UbertoBootstrap(
         contrasenia = "mypass567",
         telefono = 777888999,
         esChofer = true,
+        rol= ROLES.CONDUCTOR,
         foto = "",
         vehiculo = vehiculoMoto,
         precioBaseDelViaje = 300.0
@@ -160,20 +168,20 @@ class UbertoBootstrap(
     }
 
     // COMENTARIOS
-    fun crearComentarios() {
-        val viajesRealizados = viajeRepository.findAll().filter { it.fechaInicio.isBefore(LocalDateTime.now()) }
-        val comentarios = mutableListOf<Comentario>()
-
-        viajesRealizados.take(5).forEach {
-            comentarios.add(
-                Comentario(
-                    viaje = it,
-                    estrellas = (3..5).random(),
-                    mensaje = "Comentario sobre el viaje de ${it.viajero.nombre} con ${it.conductor.nombre}.",
-                    fecha = LocalDate.now()
-                )
-            )
-        }
-        comentarios.forEach { usuarioService.calificarViaje(it.viaje.viajero.id, CalificacionDTO(it.viaje.id, it.estrellas, it.mensaje)) }
-    }
+//    fun crearComentarios() {
+//        val viajesRealizados = viajeRepository.findAll().filter { it.fechaInicio.isBefore(LocalDateTime.now()) }
+//        val comentarios = mutableListOf<Comentario>()
+//
+//        viajesRealizados.take(5).forEach {
+//            comentarios.add(
+//                Comentario(
+//                    viaje = it,
+//                    estrellas = (3..5).random(),
+//                    mensaje = "Comentario sobre el viaje de ${it.viajero.nombre} con ${it.conductor.nombre}.",
+//                    fecha = LocalDate.now()
+//                )
+//            )
+//        }
+//        comentarios.forEach { usuarioService.calificarViaje(it.viaje.viajero.id, CalificacionDTO(it.viaje.id, it.estrellas, it.mensaje)) }
+//    }
 }

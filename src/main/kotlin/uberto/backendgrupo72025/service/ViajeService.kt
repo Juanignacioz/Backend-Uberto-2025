@@ -1,5 +1,6 @@
 package uberto.backendgrupo72025.service
 
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import uberto.backendgrupo72025.dto.*
@@ -8,16 +9,21 @@ import uberto.backendgrupo72025.domain.NotFoundException
 import uberto.backendgrupo72025.domain.Viaje
 import uberto.backendgrupo72025.domain.Viajero
 import uberto.backendgrupo72025.repository.ViajeRepository
+import uberto.backendgrupo72025.security.TokenUtils
 
 @Service
 class ViajeService(
     val viajeRepository: ViajeRepository,
     val comentarioService: ComentarioService
 ) {
+    @Autowired
+    lateinit var tokenUtils: TokenUtils
 
     fun getAllViajes() = viajeRepository.findAll()
 
-    fun getViajeById(idViaje: String?) = idViaje?.let { viajeRepository.findById(it).orElseThrow { NotFoundException("No se encontró el viaje con id $idViaje") } }!!
+    fun getViajeById(idViaje: String?) = idViaje?.let {
+        viajeRepository.findById(it).orElseThrow { NotFoundException("No se encontró el viaje con id $idViaje") }
+    }!!
 
     fun getViajesByUsuarioId(idUsuario: String?) = viajeRepository.findByViajeroIdOrConductorId(idUsuario)
 
@@ -27,17 +33,32 @@ class ViajeService(
         return viaje
     }
 
-    fun getViajesRealizadosByUsuario(idUsuario: String?, esChofer: Boolean): ViajesCompletadosDTO {
+    fun getViajesRealizadosByUsuario(bearerToken: String): ViajesCompletadosDTO {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+
         lateinit var viajesRealizadosDTO: List<ViajeDTO>
         lateinit var viajesRealizados: List<Viaje>
         var totalFacturado = 0.0
-         if (esChofer) {
-             viajesRealizados = viajeRepository.findByConductorIdAndFechaFinBefore(idUsuario)
-             viajesRealizadosDTO = viajesRealizados.map { it.toViajeDTO(it.viajero.nombreYApellido(),it.viajero.foto, viajeCalificable(it)) }
-             totalFacturado = getTotalFacturado(idUsuario)
+
+        if (esChofer) {
+            viajesRealizados = viajeRepository.findByConductorIdAndFechaFinBefore(userID)
+            viajesRealizadosDTO = viajesRealizados.map {
+                it.toViajeDTO(
+                    it.viajero.nombreYApellido(),
+                    it.viajero.foto,
+                    viajeCalificable(it)
+                )
+            }
+            totalFacturado = getTotalFacturado(userID)
         } else {
-             viajesRealizados = viajeRepository.findByViajeroIdAndFechaFinBefore(idUsuario)
-             viajesRealizadosDTO = viajesRealizados.map { it.toViajeDTO(it.conductor.nombreYApellido(), it.conductor.foto, viajeCalificable(it)) }
+            viajesRealizados = viajeRepository.findByViajeroIdAndFechaFinBefore(userID)
+            viajesRealizadosDTO = viajesRealizados.map {
+                it.toViajeDTO(
+                    it.conductor.nombreYApellido(),
+                    it.conductor.foto,
+                    viajeCalificable(it)
+                )
+            }
         }
         return ViajesCompletadosDTO(viajesRealizadosDTO, totalFacturado)
     }
@@ -46,24 +67,41 @@ class ViajeService(
 
     fun viajeCalificable(viaje: Viaje) = !viaje.viajePendiente() && !viaje.viajeComentado
 
-    fun getViajesPendientesByUsuario(idUsuario: String?, esChofer: Boolean): List<ViajeDTO> {
+    fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+
         lateinit var viajesPendientes: List<Viaje>
         if (esChofer) {
-            viajesPendientes = viajeRepository.findByConductorIdAndFechaFinAfter(idUsuario)
-            return viajesPendientes.map { it.toViajeDTO(it.viajero.nombreYApellido(), it.viajero.foto, viajeCalificable(it)) }
+            viajesPendientes = viajeRepository.findByConductorIdAndFechaFinAfter(userID)
+            return viajesPendientes.map {
+                it.toViajeDTO(
+                    it.viajero.nombreYApellido(),
+                    it.viajero.foto,
+                    viajeCalificable(it)
+                )
+            }
         } else {
-            viajesPendientes = viajeRepository.findByViajeroIdAndFechaFinAfter(idUsuario)
-            return viajesPendientes.map { it.toViajeDTO(it.conductor.nombreYApellido(),it.conductor.foto, viajeCalificable(it)) }
+            viajesPendientes = viajeRepository.findByViajeroIdAndFechaFinAfter(userID)
+            return viajesPendientes.map {
+                it.toViajeDTO(
+                    it.conductor.nombreYApellido(),
+                    it.conductor.foto,
+                    viajeCalificable(it)
+                )
+            }
         }
     }
 
-    fun getViajesConductorFiltrados(idConductor: String?, filtroDTO: FiltroDTO): List<ViajeDTO> {
-      return viajeRepository.findViajesFiltradosByConductorId(idConductor,
-          filtroDTO.usernameViajero, filtroDTO.origen, filtroDTO.destino, filtroDTO.cantidadDePasajeros)
+    fun getViajesConductorFiltrados(bearerToken: String, filtroDTO: FiltroDTO): List<ViajeDTO> {
+        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        return viajeRepository.findViajesFiltradosByConductorId(
+            userID,
+            filtroDTO.usernameViajero, filtroDTO.origen, filtroDTO.destino, filtroDTO.cantidadDePasajeros
+        )
             .map { it.toViajeDTO(it.viajero.nombreYApellido(), it.viajero.foto, viajeCalificable(it)) }
     }
 
-    fun save(viaje:Viaje){
+    fun save(viaje: Viaje) {
         viajeRepository.save(viaje)
     }
 }

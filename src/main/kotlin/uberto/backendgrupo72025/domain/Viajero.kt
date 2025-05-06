@@ -15,6 +15,7 @@ class Viajero(
     contrasenia: String="",
     telefono: Int=0,
     esChofer: Boolean=false,
+    rol : ROLES = ROLES.VIAJERO,
     foto : String="",
     @Column
     var saldo: Double = 0.0,
@@ -26,7 +27,7 @@ class Viajero(
         inverseJoinColumns = [JoinColumn(name = "amigo_id")]
     )
     val amigos: MutableList<Viajero> = mutableListOf()
-) : Usuario(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer,foto) {
+) : Usuario(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer,rol,foto) {
 
 
     override fun validacionesPorUsuario() {

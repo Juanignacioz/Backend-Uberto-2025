@@ -8,7 +8,7 @@ import uberto.backendgrupo72025.service.ViajeService
 
 
 @RestController
-@CrossOrigin("*")
+//@CrossOrigin("*")
 class ViajeController(
     @Autowired val viajeService: ViajeService
 ) {
@@ -17,26 +17,24 @@ class ViajeController(
     @Operation(summary = "crear viaje")
     fun getAllViajes() = viajeService.getAllViajes()
 
-    @PostMapping("/filtrar/{id}")
+    @PostMapping("/filtrar")
     @Operation(summary = "Devuelve los viajes pendientes filtrados para el home chofer")
     fun getViajesFiltrados(
-        @PathVariable id: String,
+        @RequestHeader("Authorization") bearerToken: String,
         @RequestBody filtroDTO: FiltroDTO
-    ) = viajeService.getViajesConductorFiltrados(id, filtroDTO)
+    ) = viajeService.getViajesConductorFiltrados(bearerToken,filtroDTO)
 
-    @GetMapping("/viajesRealizados/{idUsuario}")
+    @GetMapping("/viajesRealizados")
     @Operation(summary = "Devuelve los viajes realizados")
     fun getViajesRealizadosPorUsuario(
-        @PathVariable idUsuario: String,
-        @RequestParam esChofer: Boolean
-    ) = viajeService.getViajesRealizadosByUsuario(idUsuario, esChofer)
+        @RequestHeader("Authorization") bearerToken: String
+    ) = viajeService.getViajesRealizadosByUsuario(bearerToken)
 
-    @GetMapping("/viajesPendientes/{idUsuario}")
+    @GetMapping("/viajesPendientes")
     @Operation(summary = "Devuelve los viajes Pendientes")
     fun getViajesPendientesPorUsuario(
-        @PathVariable idUsuario: String,
-        @RequestParam esChofer: Boolean
-    ) = viajeService.getViajesPendientesByUsuario(idUsuario, esChofer)
+        @RequestHeader("Authorization") bearerToken: String
+    ) = viajeService.getViajesPendientesByUsuario(bearerToken)
 
 
 }

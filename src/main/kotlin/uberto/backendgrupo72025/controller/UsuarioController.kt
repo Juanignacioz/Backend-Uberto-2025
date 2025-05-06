@@ -9,65 +9,71 @@ import uberto.backendgrupo72025.service.UsuarioService
 
 
 @RestController
-@CrossOrigin("*")
 class UsuarioController(@Autowired val userService: UsuarioService) {
 
     @PostMapping("/usuarioLogin")
     @Operation(summary = "Devuelve un usuario que coincida user y pass")
     fun postUsuarioLoggin(@RequestBody user: UsuarioLoginDTO) = userService.getUsuarioLogin(user)
 
-    @GetMapping("/perfil/{id}")
+    @GetMapping("/perfil")
     @Operation(summary = "Devuelve los datos para el perfil")
     fun getUsuarioPerfil(
-        @PathVariable id: String,
-        @RequestParam esChofer: Boolean
-    ) = userService.getUsuarioPerfil(id, esChofer)
+        @RequestHeader("Authorization") bearerToken: String
+    ) = userService.getUsuarioPerfil(bearerToken)
 
     @PostMapping("/confirmar")
     @Operation(summary = "Contratar viaje")
-    fun contratarViaje(@RequestBody viaje: ViajeDTO) = userService.contratarViaje(viaje)
+    fun contratarViaje(
+        @RequestBody viaje: ViajeDTO,
+        @RequestHeader("Authorization") bearerToken: String,
+    ) = userService.contratarViaje(viaje,bearerToken)
 
     @PostMapping("/home/buscar")
     @Operation(summary = "Devuelve los choferes disponibles")
     fun getChoferesDisponiles(@RequestBody busquedaDTO: BusquedaDTO) = userService.getChoferesDisponibles(busquedaDTO)
 
-    @DeleteMapping("/eliminarAmigo/{userId}/{friendId}")
+    @DeleteMapping("/eliminarAmigo/{friendId}")
     @Operation(summary = "Elimina a un amigo de la lista de amigos del viajero")
     fun eliminarAmigo(
-        @PathVariable userId: String,
+        @RequestHeader("Authorization") bearerToken: String,
         @PathVariable friendId: String
-    ) = userService.eliminarAmigo(userId, friendId)
+    ) = userService.eliminarAmigo(bearerToken, friendId)
 
-    @PatchMapping("/actualizarUsuario/{id}")
+    @PatchMapping("/actualizarUsuario")
     @Operation(summary = "Actualiza los datos del usuario")
-    fun actualizarUsuario(@PathVariable id: String, @RequestBody usuarioDTO: UsuarioDTO) =
-        userService.actualizarUsuario(id, usuarioDTO)
+    fun actualizarUsuario(
+        @RequestHeader("Authorization") bearerToken: String,
+        @RequestBody usuarioDTO: UsuarioDTO
+    ) =
+        userService.actualizarUsuario(bearerToken, usuarioDTO)
 
-    @GetMapping("/buscarAmigos/{id}")
+    @GetMapping("/buscarAmigos")
     @Operation(summary = "Busca los usuarios para agregar como amigos")
     fun buscarAmigos(
-        @PathVariable id: String,
+        @RequestHeader("Authorization") bearerToken: String,
         @RequestParam query: String
-    ) = userService.getViajerosParaAgregarAmigo(id, query)
+    ) = userService.getViajerosParaAgregarAmigo(bearerToken, query)
 
-    @PutMapping("/agregarAmigo/{userId}/{friendId}")
+    @PutMapping("/agregarAmigo/{friendId}")
     @Operation(summary = "agrega a un amigo de la lista de amigos del viajero")
     fun agregarAmigo(
-        @PathVariable userId: String,
+        @RequestHeader("Authorization") bearerToken: String,
         @PathVariable friendId: String
-    ) = userService.agregarAmigo(userId, friendId)
+    ) = userService.agregarAmigo(bearerToken, friendId)
 
-    @PostMapping("/cargarSaldo/{id}")
+    @PostMapping("/cargarSaldo")
     @Operation(summary = "Carga saldo a un usuario")
     fun cargarSaldo(
-        @PathVariable id: String,
-        @RequestParam esChofer: Boolean,
+        @RequestHeader("Authorization") bearerToken: String,
         @RequestParam monto: Double
-    ) = userService.cargarSaldo(id, esChofer, monto)
+    ) = userService.cargarSaldo(bearerToken, monto)
 
-    @PatchMapping("/actualizarImagen/{id}")
+    @PatchMapping("/actualizarImagen")
     @Operation(summary = "Actualiza los datos del usuario")
-    fun actualizarImagen(@PathVariable id: String, @RequestParam esChofer: Boolean, @RequestParam imagen: String) =
-        userService.actualizarImagen(id, imagen, esChofer)
+    fun actualizarImagen(
+        @RequestHeader("Authorization") bearerToken: String,
+        @RequestParam imagen: String
+    ) =
+        userService.actualizarImagen(bearerToken, imagen)
 
 }

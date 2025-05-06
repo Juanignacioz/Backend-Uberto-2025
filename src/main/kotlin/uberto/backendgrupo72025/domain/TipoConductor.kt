@@ -13,10 +13,11 @@ class Simple(
     contrasenia: String = "",
     telefono: Int = 0,
     esChofer: Boolean = true,
+    rol: ROLES= ROLES.CONDUCTOR,
     foto: String = "",
     vehiculo: Vehiculo = Vehiculo(),
     precioBaseDelViaje: Double = 0.0
-) : Conductor(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer, foto, vehiculo, precioBaseDelViaje) {
+) : Conductor(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer,rol, foto, vehiculo, precioBaseDelViaje) {
 
     override fun calculoPlus(cantidadDePasajeros: Int, duracion: Int): Double = 1000.toDouble()
 }
@@ -32,10 +33,11 @@ class Ejecutivo(
     contrasenia: String = "",
     telefono: Int = 0,
     esChofer: Boolean = true,
+    rol: ROLES= ROLES.CONDUCTOR,
     foto: String = "",
     vehiculo: Vehiculo = Vehiculo(),
     precioBaseDelViaje: Double = 0.0
-) : Conductor(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer, foto, vehiculo, precioBaseDelViaje) {
+) : Conductor(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer, rol ,foto, vehiculo, precioBaseDelViaje) {
 
     @Transient
     override var mensaje: String = "No cumple con los requisitos de la antiguedad, ya que debe ser de menos de 10 años"
@@ -58,10 +60,11 @@ class Moto(
     contrasenia: String = "",
     telefono: Int = 0,
     esChofer: Boolean = true,
+    rol: ROLES= ROLES.CONDUCTOR,
     foto: String = "",
     vehiculo: Vehiculo = Vehiculo(),
     precioBaseDelViaje: Double = 0.0
-) : Conductor(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer, foto, vehiculo, precioBaseDelViaje) {
+) : Conductor(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer,rol, foto, vehiculo, precioBaseDelViaje) {
 
     override fun calculoPlus(cantidadDePasajeros: Int, duracion: Int): Double = costoPorDuracion(duracion)
 

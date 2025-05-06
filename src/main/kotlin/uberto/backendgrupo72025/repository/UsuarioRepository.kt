@@ -6,6 +6,7 @@ import org.springframework.data.repository.CrudRepository
 import org.springframework.stereotype.Repository
 import uberto.backendgrupo72025.domain.*
 import java.time.LocalDateTime
+import java.util.*
 
 @Repository
 interface ViajeroRepository  : CrudRepository<Viajero, String?> {
