@@ -48,7 +48,7 @@ LANGUAGE plpgsql
 AS $$
 BEGIN
     CREATE TEMP TABLE IF NOT EXISTS temp_usuarios_reservas (
-        id_usuario INT,
+        id_usuario VARCHAR,
         nombre_usuario TEXT,
         cantidad_reservas INT
     );
@@ -57,13 +57,13 @@ BEGIN
 
     INSERT INTO temp_usuarios_reservas
     SELECT u.id, u.username, COUNT(v.id)
-    FROM viajeros u  
-    JOIN viaje v ON u.id = v.viajero_id
-   WHERE u.es_chofer = false AND v.fecha_fin > NOW()
+    FROM viajeros u
+    JOIN viajes v ON u.id = v.viajero_id
+    WHERE u.es_chofer = false AND v.fecha_fin > NOW()
     GROUP BY u.id, u.nombre
     HAVING COUNT(v.id) > n_reservas;
 END;
-$$
+$$;
 
 --4. 
 
