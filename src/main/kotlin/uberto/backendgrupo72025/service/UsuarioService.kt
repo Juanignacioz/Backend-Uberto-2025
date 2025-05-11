@@ -172,8 +172,10 @@ class UsuarioService(
 
     fun getChoferesDisponibles(busquedaDTO: BusquedaDTO): List<ConductorDTO> {
         val nuevaFecha = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-        val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")).plusMinutes(busquedaDTO.duracion.toLong())
-        return conductorRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin).map {
+        val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+            .plusMinutes(busquedaDTO.duracion.toLong())
+        val conductoresDisponibles = conductorRepository.findByIdIn(viajeService.getConductoresDisponibles(nuevaFecha, nuevaFechaFin))
+        return conductoresDisponibles.map {
             it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
         }
     }
@@ -246,7 +248,49 @@ class UsuarioService(
         } else {
             comentarioService.getComentariosConductor(userID).map {
                 val conductor = getConductorById(it.viaje.conductorId)
-                it.toComentarioDTO(conductor.nombreYApellido(), conductor.foto) }
+                it.toComentarioDTO(conductor.nombreYApellido(), conductor.foto)
+            }
         }
     }
+
+
+    fun getViajesRealizadosByUsuario(bearerToken: String): ViajesCompletadosDTO {
+
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
+        lateinit var viajesRealizadosDTO: List<ViajeDTO>
+        var totalFacturado = 0.0
+
+        if (esChofer) {
+            viajesRealizadosDTO = viajeService.getViajesRealizadosByConductor(userID)
+            totalFacturado = viajeService.getTotalFacturado(userID)
+        } else {
+            viajesRealizadosDTO = viajeService.getViajesRealizadosByViajero(userID).map {
+                val conductor = getConductorById(it.conductorId)
+                it.toViajeDTO(
+                    conductor.nombreYApellido(),
+                    conductor.foto,
+                    viajeService.viajeCalificable(it)
+                )
+            }
+        }
+        return ViajesCompletadosDTO(viajesRealizadosDTO, totalFacturado)
+    }
+
+    fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> { //del viaje paso al user
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
+
+        return if (esChofer) {
+            viajeService.getViajesPendientesByConductor(userID)
+        } else {
+            viajeService.getViajesPendientesByViajero(userID).map {
+                val conductor = getConductorById(it.conductorId)
+                it.toViajeDTO(
+                    conductor.nombreYApellido(),
+                    conductor.foto,
+                    viajeService.viajeCalificable(it)
+                )
+            }
+        }
+    }
+
 }

@@ -10,15 +10,12 @@ import uberto.backendgrupo72025.domain.Viajero
 import uberto.backendgrupo72025.repository.jpa.ViajeRepository
 import uberto.backendgrupo72025.repository.mongo.ConductorRepository
 import uberto.backendgrupo72025.security.TokenUtils
+import java.time.LocalDateTime
 
 @Service
 class ViajeService(
-    val viajeRepository: ViajeRepository,
-    val comentarioService: ComentarioService
+    val viajeRepository: ViajeRepository
 ) {
-
-    @Autowired
-    private lateinit var conductorRepository: ConductorRepository
 
     @Autowired
     lateinit var tokenUtils: TokenUtils
@@ -37,67 +34,33 @@ class ViajeService(
         return viaje
     }
 
-    fun getViajesRealizadosByUsuario(bearerToken: String): ViajesCompletadosDTO {
-        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-
-        lateinit var viajesRealizadosDTO: List<ViajeDTO>
-        lateinit var viajesRealizados: List<Viaje>
-        var totalFacturado = 0.0
-
-        if (esChofer) {
-            viajesRealizados = viajeRepository.findByConductorIdAndFechaFinBefore(userID)
-            viajesRealizadosDTO = viajesRealizados.map {
-                it.toViajeDTO(
-                    it.viajero.nombreYApellido(),
-                    it.viajero.foto,
-                    viajeCalificable(it)
-                )
-            }
-            totalFacturado = getTotalFacturado(userID)
-        } else {
-            viajesRealizados = viajeRepository.findByViajeroIdAndFechaFinBefore(userID)
-
-            viajesRealizadosDTO = viajesRealizados.map {
-                val conductor = conductorRepository.findById(it.conductorId!!).get()
-                it.toViajeDTO(
-                    conductor.nombreYApellido(),
-                    conductor.foto,
-                    viajeCalificable(it)
-                )
-            }
+    fun getViajesRealizadosByConductor(userID: String?): List<ViajeDTO>{
+        return viajeRepository.findByConductorIdAndFechaFinBefore(userID).map {
+            it.toViajeDTO(
+                it.viajero.nombreYApellido(),
+                it.viajero.foto,
+                viajeCalificable(it)
+            )
         }
-        return ViajesCompletadosDTO(viajesRealizadosDTO, totalFacturado)
     }
+
+    fun getViajesRealizadosByViajero(userID: String?) = viajeRepository.findByViajeroIdAndFechaFinBefore(userID)
 
     fun getTotalFacturado(idUsuario: String?) = viajeRepository.sumTotalFacturadoByChoferId(idUsuario)
 
     fun viajeCalificable(viaje: Viaje) = !viaje.viajePendiente() && !viaje.viajeComentado
 
-    fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> {
-        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-
-        lateinit var viajesPendientes: List<Viaje>
-        if (esChofer) {
-            viajesPendientes = viajeRepository.findByConductorIdAndFechaFinAfter(userID)
-            return viajesPendientes.map {
-                it.toViajeDTO(
-                    it.viajero.nombreYApellido(),
-                    it.viajero.foto,
-                    viajeCalificable(it)
-                )
-            }
-        } else {
-            viajesPendientes = viajeRepository.findByViajeroIdAndFechaFinAfter(userID)
-            return viajesPendientes.map {
-                val conductor = conductorRepository.findById(it.conductorId!!).get()
-                it.toViajeDTO(
-                    conductor.nombreYApellido(),
-                    conductor.foto,
-                    viajeCalificable(it)
-                )
-            }
+    fun getViajesPendientesByConductor(userID: String?): List<ViajeDTO> {
+        return viajeRepository.findByConductorIdAndFechaFinAfter(userID).map {
+            it.toViajeDTO(
+                it.viajero.nombreYApellido(),
+                it.viajero.foto,
+                viajeCalificable(it)
+            )
         }
     }
+
+    fun getViajesPendientesByViajero(userID: String?) = viajeRepository.findByViajeroIdAndFechaFinAfter(userID)
 
     fun getViajesConductorFiltrados(bearerToken: String, filtroDTO: FiltroDTO): List<ViajeDTO> {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
@@ -111,4 +74,6 @@ class ViajeService(
     fun save(viaje: Viaje) {
         viajeRepository.save(viaje)
     }
+    
+    fun getConductoresDisponibles(nuevaFecha: LocalDateTime, nuevaFechaFin: LocalDateTime) = viajeRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin)
 }
