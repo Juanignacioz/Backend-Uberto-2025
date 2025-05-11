@@ -38,17 +38,10 @@ class UsuarioService(
             return tokenUtils.createToken(usuario.id, usuario.rol)
         }
 
-        usuario = conductorRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia).first()
+        usuario = conductorRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia)
             ?: throw CredencialesInvalidasException()
         return tokenUtils.createToken(usuario.id, usuario.rol)
     }
-
-//    @jakarta.transaction.Transactional(jakarta.transaction.Transactional.TxType.NEVER)
-//    fun login(credencialesDTO: CredencialesDTO): String {
-//        val usuario = validarUsuario(credencialesDTO.usuario)
-//        usuario.validarCredenciales(credencialesDTO.password)
-//        return tokenUtils.createToken(credencialesDTO.usuario, usuario.roles.map { it.name })!!
-//    }
 
     fun getUsuarioPerfil(bearerToken: String): PerfilDTO {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
@@ -177,13 +170,13 @@ class UsuarioService(
         viajeroRepository.save(usuario)
     }
 
-//    fun getChoferesDisponibles(busquedaDTO: BusquedaDTO): List<ConductorDTO> {
-//        val nuevaFecha = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-//        val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")).plusMinutes(busquedaDTO.duracion.toLong())
-//        return conductorRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin).map {
-//            it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
-//        }
-//    }
+    fun getChoferesDisponibles(busquedaDTO: BusquedaDTO): List<ConductorDTO> {
+        val nuevaFecha = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+        val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")).plusMinutes(busquedaDTO.duracion.toLong())
+        return conductorRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin).map {
+            it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
+        }
+    }
 
     fun conductorDisponible(idConductor: String?, fechaNueva: LocalDateTime, duracion: Int) =
         !viajeService.getViajesByUsuarioId(idConductor).any { it.seSolapan(fechaNueva, duracion) }

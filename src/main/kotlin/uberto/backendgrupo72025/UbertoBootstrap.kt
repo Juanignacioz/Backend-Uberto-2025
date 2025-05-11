@@ -24,6 +24,7 @@ class UbertoBootstrap(
 
     override fun afterPropertiesSet() {
         crearUsuarios()
+        conductorRepository.deleteAll()
         crearChoferes()
         crearViajes()
 //        crearComentarios()
