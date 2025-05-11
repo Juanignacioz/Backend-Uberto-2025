@@ -2,13 +2,13 @@ package uberto.backendgrupo72025.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
-import org.springframework.transaction.annotation.Transactional
 import uberto.backendgrupo72025.dto.*
 import uberto.backendgrupo72025.domain.Conductor
 import uberto.backendgrupo72025.domain.NotFoundException
 import uberto.backendgrupo72025.domain.Viaje
 import uberto.backendgrupo72025.domain.Viajero
-import uberto.backendgrupo72025.repository.ViajeRepository
+import uberto.backendgrupo72025.repository.jpa.ViajeRepository
+import uberto.backendgrupo72025.repository.mongo.ConductorRepository
 import uberto.backendgrupo72025.security.TokenUtils
 
 @Service
@@ -16,6 +16,10 @@ class ViajeService(
     val viajeRepository: ViajeRepository,
     val comentarioService: ComentarioService
 ) {
+
+    @Autowired
+    private lateinit var conductorRepository: ConductorRepository
+
     @Autowired
     lateinit var tokenUtils: TokenUtils
 
@@ -52,10 +56,12 @@ class ViajeService(
             totalFacturado = getTotalFacturado(userID)
         } else {
             viajesRealizados = viajeRepository.findByViajeroIdAndFechaFinBefore(userID)
+
             viajesRealizadosDTO = viajesRealizados.map {
+                val conductor = conductorRepository.findById(it.conductorId!!).get()
                 it.toViajeDTO(
-                    it.conductor.nombreYApellido(),
-                    it.conductor.foto,
+                    conductor.nombreYApellido(),
+                    conductor.foto,
                     viajeCalificable(it)
                 )
             }
@@ -83,9 +89,10 @@ class ViajeService(
         } else {
             viajesPendientes = viajeRepository.findByViajeroIdAndFechaFinAfter(userID)
             return viajesPendientes.map {
+                val conductor = conductorRepository.findById(it.conductorId!!).get()
                 it.toViajeDTO(
-                    it.conductor.nombreYApellido(),
-                    it.conductor.foto,
+                    conductor.nombreYApellido(),
+                    conductor.foto,
                     viajeCalificable(it)
                 )
             }

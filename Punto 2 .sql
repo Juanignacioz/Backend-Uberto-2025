@@ -12,7 +12,19 @@ SELECT u.id as usuario, count(v.*) as cantidad_de_reservas
 FROM viajes v
 INNER JOIN viajeros u ON v.viajero_id = u.id
 WHERE EXTRACT(YEAR FROM v.fecha_fin) = EXTRACT(YEAR FROM CURRENT_DATE)
-GROUP BY u.id; 
+GROUP BY u.id;
+
+SELECT v.id AS viaje_id,
+       u.id AS usuario_id,
+       v.fecha_inicio,
+       v.fecha_fin,
+       v.origen,
+       v.destino,
+       u.username
+FROM viaje v
+         JOIN usuario u ON v.viajero_id = u.id
+WHERE EXTRACT(year FROM v.fecha_inicio) = EXTRACT(year FROM CURRENT_DATE)
+ORDER BY u.id;
 
 --2. 
 CREATE TABLE auditoria_saldos (

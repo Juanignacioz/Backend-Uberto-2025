@@ -4,13 +4,11 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import uberto.backendgrupo72025.domain.*
 import org.springframework.beans.factory.InitializingBean
-import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Component
-import uberto.backendgrupo72025.dto.CalificacionDTO
-import uberto.backendgrupo72025.repository.*
+import uberto.backendgrupo72025.repository.jpa.*
+import uberto.backendgrupo72025.repository.mongo.*
 import uberto.backendgrupo72025.service.UsuarioService
 import java.time.LocalDateTime
-import java.time.LocalDate
 
 @Component
 class UbertoBootstrap(
@@ -152,7 +150,7 @@ class UbertoBootstrap(
                 viajes.add(
                     Viaje(
                         viajero = viajero,
-                        conductor = conductor,
+                        conductorId = conductor.id,
                         origen = "Ciudad ${it + 1}",
                         destino = "Destino ${it + 1}",
                         fechaInicio = fechaInicio,

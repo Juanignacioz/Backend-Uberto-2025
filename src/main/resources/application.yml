@@ -19,6 +19,16 @@ spring:
         hibernate:
             ddl-auto: create-drop
 
+    data:
+      mongodb:
+          uri: mongodb://mongo:mongo@127.0.0.1:27019/uberto_mongo?authSource=admin
+
+logging:
+    level:
+        org.springframework.data: DEBUG
+        org.mongodb.driver.protocol.command: DEBUG
+
 security:
     secret-key: cd372fb85148700fa88095e3492d3f9f5beb43e555e5ff26d95f5a6adc36f8e6
     access-token-minutes: 300
+

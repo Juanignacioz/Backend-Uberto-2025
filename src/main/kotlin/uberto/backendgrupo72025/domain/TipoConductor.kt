@@ -1,8 +1,9 @@
 package uberto.backendgrupo72025.domain
 
 import jakarta.persistence.*
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity
+@Document
 @DiscriminatorValue(value = "Standard")
 class Simple(
     id: String? = null,
@@ -22,7 +23,7 @@ class Simple(
     override fun calculoPlus(cantidadDePasajeros: Int, duracion: Int): Double = 1000.toDouble()
 }
 
-@Entity
+@Document
 @DiscriminatorValue(value = "Ejecutivo")
 class Ejecutivo(
     id: String? = null,
@@ -49,7 +50,7 @@ class Ejecutivo(
     private fun costoPorCantidadDePasajeros(cantidadDePasajeros: Int):Double = if (cantidadDePasajeros == 1) 2000.toDouble() else 1500.toDouble()
 }
 
-@Entity
+@Document
 @DiscriminatorValue(value = "Moto")
 class Moto(
     id: String? = null,

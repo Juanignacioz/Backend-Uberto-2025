@@ -5,8 +5,8 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 import uberto.backendgrupo72025.dto.*
 import uberto.backendgrupo72025.domain.*
-import uberto.backendgrupo72025.repository.*
-import uberto.backendgrupo72025.security.JWTAuthorizationFilter
+import uberto.backendgrupo72025.repository.jpa.*
+import uberto.backendgrupo72025.repository.mongo.*
 import uberto.backendgrupo72025.security.TokenUtils
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
@@ -170,13 +170,13 @@ class UsuarioService(
         viajeroRepository.save(usuario)
     }
 
-    fun getChoferesDisponibles(busquedaDTO: BusquedaDTO): List<ConductorDTO> {
-        val nuevaFecha = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
-        val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")).plusMinutes(busquedaDTO.duracion.toLong())
-        return conductorRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin).map {
-            it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
-        }
-    }
+//    fun getChoferesDisponibles(busquedaDTO: BusquedaDTO): List<ConductorDTO> {
+//        val nuevaFecha = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
+//        val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")).plusMinutes(busquedaDTO.duracion.toLong())
+//        return conductorRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin).map {
+//            it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
+//        }
+//    }
 
     fun conductorDisponible(idConductor: String?, fechaNueva: LocalDateTime, duracion: Int) =
         !viajeService.getViajesByUsuarioId(idConductor).any { it.seSolapan(fechaNueva, duracion) }
@@ -208,7 +208,7 @@ class UsuarioService(
         val viaje = viajeService.getViajeById(calificacion.idViaje)
         comentarioService.calificar(calificacion, viaje, userID)
         viaje.viajeComentado=true
-        actualizarCalificacion(viaje.conductor)
+        actualizarCalificacion(viaje.conductorId)
         viajeService.save(viaje)
     }
 
@@ -228,11 +228,12 @@ class UsuarioService(
         comentarioService.eliminarComentario(userID, comentario)
         val viaje=comentario.viaje
         viaje.viajeComentado=false
-        actualizarCalificacion(comentario.viaje.conductor)
+        actualizarCalificacion(comentario.viaje.conductorId)
         viajeService.save(viaje)
     }
 
-    private fun actualizarCalificacion(conductor: Conductor) {
+    private fun actualizarCalificacion(conductorId: String?) {
+        val conductor = getConductorById(conductorId)
         conductor.calificacion = comentarioService.getCalificacionByConductor(conductor.id)
         conductorRepository.save(conductor)
     }

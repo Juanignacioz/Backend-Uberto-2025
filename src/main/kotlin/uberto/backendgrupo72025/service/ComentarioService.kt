@@ -1,20 +1,23 @@
 package uberto.backendgrupo72025.service
 
 import org.springframework.beans.factory.annotation.Autowired
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import org.springframework.stereotype.Service
 import uberto.backendgrupo72025.dto.CalificacionDTO
 import uberto.backendgrupo72025.dto.ComentarioDTO
 import uberto.backendgrupo72025.dto.toComentario
 import uberto.backendgrupo72025.dto.toComentarioDTO
 import uberto.backendgrupo72025.domain.*
-import uberto.backendgrupo72025.repository.ComentarioRepository
+import uberto.backendgrupo72025.repository.jpa.ComentarioRepository
+import uberto.backendgrupo72025.repository.mongo.ConductorRepository
 import uberto.backendgrupo72025.security.TokenUtils
 
 @Service
 class ComentarioService(
     val comentarioRepository: ComentarioRepository
 ) {
+    @Autowired
+    private lateinit var conductorRepository: ConductorRepository
+
     @Autowired
     lateinit var tokenUtils: TokenUtils
 
@@ -27,9 +30,13 @@ class ComentarioService(
         return if (esChofer) {
             comentarioRepository.findByViajeConductorIdAndActive(userID).map { it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto) }
         } else {
-            comentarioRepository.findByViajeViajeroIdAndActive(userID).map { it.toComentarioDTO(it.viaje.conductor.nombreYApellido(), it.viaje.conductor.foto) }
+            comentarioRepository.findByViajeViajeroIdAndActive(userID).map {
+                val conductor = conductorRepository.findById(it.viaje.conductorId!!).get()
+                it.toComentarioDTO(conductor.nombreYApellido(), conductor.foto)
+            }
         }
     }
+
     fun getComentariosConfirmar(bearerToken : String,id: String): List<ComentarioDTO> {
         val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
         return comentarioRepository.findByViajeConductorIdAndActive(id).map { it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto) }

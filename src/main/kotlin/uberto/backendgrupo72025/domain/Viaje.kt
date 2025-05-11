@@ -15,9 +15,8 @@ class Viaje(
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "viajero_id")
     val viajero: Viajero = Viajero(),
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "conductor_id")
-    val conductor: Conductor = Simple(),
+    @Column(name = "conductor_id")
+    val conductorId: String? = "",
     @Column(length = 50)
     val origen: String = "",
     @Column(length = 50)

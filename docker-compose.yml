@@ -1,6 +1,5 @@
 services:
 
-
   db:
     image: postgres:latest
     container_name: uberto_sql
@@ -13,6 +12,22 @@ services:
     volumes:
       - db:/var/lib/postgresql/data
       - ./Docker/init_db.sh:/docker-entrypoint-initdb.d/01_init_db.sh
+
+  mongo:
+    image: mongo:latest
+    container_name: uberto_mongo
+    hostname: host-mongo
+    ports:
+      - "27019:27017"
+    volumes:
+      - ~/apps/uberto_mongo_db:/data/db
+      - ~/apps/uberto_mongo_log:/var/log/mongodb/
+      - ./Docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: uberto_mongo
+
 
   pgadmin:
     image: dpage/pgadmin4
@@ -29,5 +44,4 @@ services:
 volumes:
   db:
   pgadmin-data:
-
 

@@ -3,10 +3,11 @@ package uberto.backendgrupo72025.domain
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
-import jakarta.validation.constraints.Min
+import org.springframework.data.annotation.Transient
+import org.springframework.data.mongodb.core.mapping.Document
 
-@Entity
-@Table(name = "conductores")
+
+@Document(collection = "conductores")
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include =
     JsonTypeInfo.As.PROPERTY, property = "type")
 @JsonSubTypes(
@@ -25,7 +26,7 @@ abstract class Conductor(
     contrasenia: String = "",
     telefono: Int = 0,
     esChofer: Boolean = true,
-    rol: ROLES,
+    rol: ROLES = ROLES.CONDUCTOR,
     foto: String = "",
     @OneToOne (cascade = [(CascadeType.ALL)])
     var vehiculo: Vehiculo = Vehiculo(),
