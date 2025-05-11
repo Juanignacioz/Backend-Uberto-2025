@@ -8,38 +8,32 @@ import uberto.backendgrupo72025.dto.toComentario
 import uberto.backendgrupo72025.dto.toComentarioDTO
 import uberto.backendgrupo72025.domain.*
 import uberto.backendgrupo72025.repository.jpa.ComentarioRepository
-import uberto.backendgrupo72025.repository.mongo.ConductorRepository
 import uberto.backendgrupo72025.security.TokenUtils
 
 @Service
 class ComentarioService(
     val comentarioRepository: ComentarioRepository
+
 ) {
-    @Autowired
-    private lateinit var conductorRepository: ConductorRepository
 
     @Autowired
     lateinit var tokenUtils: TokenUtils
 
     fun getAll() = comentarioRepository.findAll()
 
-    fun getComentarioById(idComentario: String?) = idComentario?.let { comentarioRepository.findById(it).orElseThrow{ NotFoundException("No se encontro el comentario con id $it") } }!!
+    fun getComentarioById(idComentario: String?) = idComentario?.let {
+        comentarioRepository.findById(it).orElseThrow { NotFoundException("No se encontro el comentario con id $it") }
+    }!!
 
-    fun getComentarios(bearerToken : String): List<ComentarioDTO> {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
-        return if (esChofer) {
-            comentarioRepository.findByViajeConductorIdAndActive(userID).map { it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto) }
-        } else {
-            comentarioRepository.findByViajeViajeroIdAndActive(userID).map {
-                val conductor = conductorRepository.findById(it.viaje.conductorId!!).get()
-                it.toComentarioDTO(conductor.nombreYApellido(), conductor.foto)
-            }
+    fun getComentariosConductor(userID: String?) = comentarioRepository.findByViajeViajeroIdAndActive(userID)
+
+    fun getComentariosViajero(userID: String?) = comentarioRepository.findByViajeConductorIdAndActive(userID)
+
+    fun getComentariosConfirmar(bearerToken: String, id: String): List<ComentarioDTO> {
+        tokenUtils.decodificatorAuth(bearerToken)
+        return comentarioRepository.findByViajeConductorIdAndActive(id).map {
+            it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto)
         }
-    }
-
-    fun getComentariosConfirmar(bearerToken : String,id: String): List<ComentarioDTO> {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
-        return comentarioRepository.findByViajeConductorIdAndActive(id).map { it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto) }
     }
 
     fun calificar(calificacion: CalificacionDTO, viaje: Viaje, userID: String): Comentario {
@@ -62,7 +56,7 @@ class ComentarioService(
         if (viajeCalificado(viaje.id)) throw BadRequestException("No se puede calificar el mismo viaje más de una vez.")
     }
 
-    fun viajeCalificado(idViaje : String) = comentarioRepository.existsByViajeIdAndActive(idViaje, true)
+    fun viajeCalificado(idViaje: String) = comentarioRepository.existsByViajeIdAndActive(idViaje, true)
 
     fun eliminarComentario(userID: String, comentario: Comentario) {
         validarEliminarComentario(userID, comentario)
@@ -74,5 +68,6 @@ class ComentarioService(
         if (idViajero != comentario.viaje.viajero.id) throw BadRequestException("No se puede eliminar un comentario realizado por otro usuario")
     }
 
-    fun getCalificacionByConductor(conductorID: String?) = comentarioRepository.promedioEstrellasByConductor(conductorID)
+    fun getCalificacionByConductor(conductorID: String?) =
+        comentarioRepository.promedioEstrellasByConductor(conductorID)
 }

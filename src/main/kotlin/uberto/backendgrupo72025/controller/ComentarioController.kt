@@ -31,7 +31,7 @@ class ComentarioController(
     @Operation(summary = "Devuelve los comentarios por usuario")
     fun getComentariosPorUsuario(
         @RequestHeader("Authorization") bearerToken: String
-    ) = comentarioService.getComentarios(bearerToken)
+    ) = usuarioService.getComentarios(bearerToken)
 
     @DeleteMapping("eliminarComentario/{idComentario}")
     @Operation(summary = "Elimina un comentario realizado")

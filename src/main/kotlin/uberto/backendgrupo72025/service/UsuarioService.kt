@@ -23,16 +23,23 @@ class UsuarioService(
     @Autowired
     lateinit var tokenUtils: TokenUtils
 
-    fun getViajeroById(id: String?) = id?.let { viajeroRepository.findById(it).orElseThrow { NotFoundException("El viajero con id $id no fue encontrado") } }!!
+    fun getViajeroById(id: String?) = id?.let {
+        viajeroRepository.findById(it).orElseThrow { NotFoundException("El viajero con id $id no fue encontrado") }
+    }!!
 
-    fun getConductorById(id: String?) = id?.let { conductorRepository.findById(it).orElseThrow { NotFoundException("El conductor con id $id no fue encontrado") } }!!
+    fun getConductorById(id: String?) = id?.let {
+        conductorRepository.findById(it).orElseThrow { NotFoundException("El conductor con id $id no fue encontrado") }
+    }!!
 
     fun getUsuarioLogin(user: UsuarioLoginDTO): String? {
         var usuario: Usuario?
         usuario = viajeroRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia)
-        if (usuario != null) { return tokenUtils.createToken(usuario.id, usuario.rol) }
+        if (usuario != null) {
+            return tokenUtils.createToken(usuario.id, usuario.rol)
+        }
 
-        usuario = conductorRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia) ?: throw CredencialesInvalidasException()
+        usuario = conductorRepository.findByUsernameAndContrasenia(user.usuario, user.contrasenia).first()
+            ?: throw CredencialesInvalidasException()
         return tokenUtils.createToken(usuario.id, usuario.rol)
     }
 
@@ -43,8 +50,8 @@ class UsuarioService(
 //        return tokenUtils.createToken(credencialesDTO.usuario, usuario.roles.map { it.name })!!
 //    }
 
-    fun  getUsuarioPerfil(bearerToken: String): PerfilDTO {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+    fun getUsuarioPerfil(bearerToken: String): PerfilDTO {
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         return if (esChofer) {
             getConductorById(userID).toPerfilDTO()
         } else {
@@ -54,7 +61,7 @@ class UsuarioService(
 
     @Transactional
     fun actualizarImagen(bearerToken: String, imagen: String): String {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         lateinit var usuario: Usuario
         if (esChofer) {
             usuario = getConductorById(userID)
@@ -104,7 +111,7 @@ class UsuarioService(
 
     @Transactional
     fun actualizarUsuario(bearerToken: String, usuarioDTO: UsuarioDTO): PerfilDTO {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         return if (esChofer) {
             actualizarChofer(userID, usuarioDTO.toPerfilChoferDTO())
         } else {
@@ -121,7 +128,7 @@ class UsuarioService(
 
     @Transactional
     fun agregarAmigo(bearerToken: String, idAmigo: String?): AmigoDTO {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val viajero = getViajeroById(userID)
         val amigo = getViajeroById(idAmigo)
         viajero.agregarAmigo(amigo)
@@ -131,7 +138,7 @@ class UsuarioService(
 
     @Transactional
     fun eliminarAmigo(bearerToken: String, idAmigo: String?) {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val viajero = getViajeroById(userID)
         val amigo = getViajeroById(idAmigo)
         viajero.eliminarAmigo(amigo)
@@ -139,7 +146,7 @@ class UsuarioService(
     }
 
     fun getViajerosParaAgregarAmigo(bearerToken: String, query: String): List<AmigoDTO> {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         return viajeroRepository.buscarViajerosNoAmigos(userID, query).map { it.toAmigoDTO() }
     }
 
@@ -163,7 +170,7 @@ class UsuarioService(
 
     @Transactional
     fun cargarSaldo(bearerToken: String, monto: Double) {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val usuario = getViajeroById(userID)
         validarCargaDeSaldo(monto, esChofer)
         usuario.agregarSaldo(monto)
@@ -182,8 +189,8 @@ class UsuarioService(
         !viajeService.getViajesByUsuarioId(idConductor).any { it.seSolapan(fechaNueva, duracion) }
 
     @Transactional
-    fun contratarViaje(viajeDTO: ViajeDTO,bearerToken:String) {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+    fun contratarViaje(viajeDTO: ViajeDTO, bearerToken: String) {
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val viajero = getViajeroById(userID)
         val conductor = getConductorById(viajeDTO.idConductor)
         validarPuedeRealizarseViaje(viajero, conductor.id, viajeDTO)
@@ -203,11 +210,11 @@ class UsuarioService(
 
     @Transactional
     fun calificarViaje(bearerToken: String, calificacion: CalificacionDTO) {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
 
         val viaje = viajeService.getViajeById(calificacion.idViaje)
         comentarioService.calificar(calificacion, viaje, userID)
-        viaje.viajeComentado=true
+        viaje.viajeComentado = true
         actualizarCalificacion(viaje.conductorId)
         viajeService.save(viaje)
     }
@@ -215,19 +222,18 @@ class UsuarioService(
     fun validarUsuario(idUsuario: String) {
         if (viajeroRepository.existsById(idUsuario) || conductorRepository.existsById(idUsuario)) {
             return
-        }
-        else {
+        } else {
             throw CredencialesInvalidasException()
         }
     }
 
     @Transactional
     fun eliminarComentario(bearerToken: String, idComentario: String?) {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val comentario = comentarioService.getComentarioById(idComentario)
         comentarioService.eliminarComentario(userID, comentario)
-        val viaje=comentario.viaje
-        viaje.viajeComentado=false
+        val viaje = comentario.viaje
+        viaje.viajeComentado = false
         actualizarCalificacion(comentario.viaje.conductorId)
         viajeService.save(viaje)
     }
@@ -236,5 +242,18 @@ class UsuarioService(
         val conductor = getConductorById(conductorId)
         conductor.calificacion = comentarioService.getCalificacionByConductor(conductor.id)
         conductorRepository.save(conductor)
+    }
+
+    fun getComentarios(bearerToken: String): List<ComentarioDTO> {
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
+        return if (esChofer) {
+            comentarioService.getComentariosViajero(userID).map {
+                it.toComentarioDTO(it.viaje.viajero.nombreYApellido(), it.viaje.viajero.foto)
+            }
+        } else {
+            comentarioService.getComentariosConductor(userID).map {
+                val conductor = getConductorById(it.viaje.conductorId)
+                it.toComentarioDTO(conductor.nombreYApellido(), conductor.foto) }
+        }
     }
 }

@@ -7,8 +7,7 @@ import uberto.backendgrupo72025.domain.Conductor
 @Repository
 interface ConductorRepository: MongoRepository<Conductor, String?> {
 
-    fun findByUsernameAndContrasenia(username: String, contrasenia: String): Conductor?
-
+    fun findByUsernameAndContrasenia(username: String, contrasenia: String): List<Conductor?>
 
 //    @Query("""
 //    SELECT c

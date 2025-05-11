@@ -38,7 +38,7 @@ class ViajeService(
     }
 
     fun getViajesRealizadosByUsuario(bearerToken: String): ViajesCompletadosDTO {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
 
         lateinit var viajesRealizadosDTO: List<ViajeDTO>
         lateinit var viajesRealizados: List<Viaje>
@@ -74,7 +74,7 @@ class ViajeService(
     fun viajeCalificable(viaje: Viaje) = !viaje.viajePendiente() && !viaje.viajeComentado
 
     fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
 
         lateinit var viajesPendientes: List<Viaje>
         if (esChofer) {
@@ -100,7 +100,7 @@ class ViajeService(
     }
 
     fun getViajesConductorFiltrados(bearerToken: String, filtroDTO: FiltroDTO): List<ViajeDTO> {
-        val (userID, esChofer) = tokenUtils.authenticate(bearerToken)
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         return viajeRepository.findViajesFiltradosByConductorId(
             userID,
             filtroDTO.usernameViajero, filtroDTO.origen, filtroDTO.destino, filtroDTO.cantidadDePasajeros
