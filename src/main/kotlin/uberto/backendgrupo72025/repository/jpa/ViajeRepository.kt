@@ -44,4 +44,19 @@ interface ViajeRepository  : CrudRepository<Viaje, String?> {
         destino: String?,
         cantidadDePasajeros: Int?
     ): List<Viaje>
+
+    @Query("""
+    SELECT DISTINCT v1.conductorId
+    FROM Viaje v1
+    WHERE v1.conductorId IS NOT NULL
+    AND NOT EXISTS (
+        SELECT 1 FROM Viaje v2
+        WHERE v2.conductorId = v1.conductorId
+        AND (
+            (v2.fechaInicio < :nuevaFechaFin AND v2.fechaFin > :nuevaFechaInicio)
+            OR (v2.fechaInicio < :nuevaFechaInicio AND v2.fechaFin > :nuevaFechaInicio)
+        )
+    )
+""")
+    fun findConductoresDisponibles(nuevaFechaInicio: LocalDateTime, nuevaFechaFin: LocalDateTime): List<String>
 }

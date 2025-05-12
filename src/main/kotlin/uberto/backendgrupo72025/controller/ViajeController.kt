@@ -4,13 +4,14 @@ import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import uberto.backendgrupo72025.dto.*
-import uberto.backendgrupo72025.service.ViajeService
+import uberto.backendgrupo72025.service.*
 
 
 @RestController
 //@CrossOrigin("*")
 class ViajeController(
-    @Autowired val viajeService: ViajeService
+    @Autowired val viajeService: ViajeService,
+    @Autowired val usuarioService: UsuarioService
 ) {
 
     @GetMapping("/perfil/viajes")
@@ -28,13 +29,13 @@ class ViajeController(
     @Operation(summary = "Devuelve los viajes realizados")
     fun getViajesRealizadosPorUsuario(
         @RequestHeader("Authorization") bearerToken: String
-    ) = viajeService.getViajesRealizadosByUsuario(bearerToken)
+    ) = usuarioService.getViajesRealizadosByUsuario(bearerToken)
 
     @GetMapping("/viajesPendientes")
     @Operation(summary = "Devuelve los viajes Pendientes")
     fun getViajesPendientesPorUsuario(
         @RequestHeader("Authorization") bearerToken: String
-    ) = viajeService.getViajesPendientesByUsuario(bearerToken)
+    ) = usuarioService.getViajesPendientesByUsuario(bearerToken)
 
 
 }
