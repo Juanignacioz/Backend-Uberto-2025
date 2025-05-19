@@ -1,10 +1,12 @@
 package uberto.backendgrupo72025.domain
 
 import jakarta.persistence.*
+import org.springframework.data.annotation.Transient
+import org.springframework.data.annotation.TypeAlias
 import org.springframework.data.mongodb.core.mapping.Document
 
 @Document
-@DiscriminatorValue(value = "Standard")
+@TypeAlias("Auto estandar")
 class Simple(
     id: String? = null,
     nombre: String = "",
@@ -24,7 +26,7 @@ class Simple(
 }
 
 @Document
-@DiscriminatorValue(value = "Ejecutivo")
+@TypeAlias("Auto Ejecutivo")
 class Ejecutivo(
     id: String? = null,
     nombre: String = "",
@@ -51,7 +53,7 @@ class Ejecutivo(
 }
 
 @Document
-@DiscriminatorValue(value = "Moto")
+@TypeAlias("Moto")
 class Moto(
     id: String? = null,
     nombre: String = "",

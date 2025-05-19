@@ -1,24 +1,24 @@
 package uberto.backendgrupo72025.domain
 
 import jakarta.persistence.*
-import jakarta.validation.constraints.Min
+import org.bson.types.ObjectId
+import org.springframework.data.mongodb.core.mapping.Document
 import java.time.LocalDate
 
-@Entity
-@Table(name = "vehiculos")
+@Document(collection = "vehiculos")
 class Vehiculo(
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    var id: String = "",
-    @Column(length = 20)
+    //@GeneratedValue(strategy = GenerationType.UUID)
+    var id: String =  ObjectId().toHexString(),
+  //  @field:Size(max = 20)
     var marca: String = "",
-    @Column(length = 20)
+  //  @Column(length = 20)
     var modelo : String = "",
-    @Column(length = 7)
+ ///   @Column(length = 7)
     var dominio: String = "",
-    @Column(length = 4)
+  //  @Column(length = 4)
     var anio: Int = 0,
-    @Column(nullable = false)
+   // @Column(nullable = false)
     var active: Boolean = true
 ) {
 
