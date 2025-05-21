@@ -1,9 +1,10 @@
-# backend-2025-grupo7
+> [!IMPORTANT]  
+> DER 
 
-> [!NOTE]  
-> Como trabajar el random con la busqueda de para viaje antes de confirmar, en caso de no generar el viaje donde quedaria guardado.
-> 
-> Dividir los repos por clase hijas
-> 
-> Consultar el template method de validacion de los tipos de vehiculos
->
+![DER](https://github.com/user-attachments/assets/a5e5f12d-5ff7-4761-816d-640e7e2d0062)
+
+
+> [!IMPORTANT]  
+> Parte 2: Componentes en la base de datos, Se pide que implementen componentes en la base de datos para resolver los siguientes requerimientos:
+
+  ![Punto 2](https://github.com/phm-unsam/backend-2025-grupo7/blob/Security/Punto%202%20.sql)

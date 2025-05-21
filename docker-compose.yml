@@ -1,0 +1,82 @@
+services:
+
+  db:
+    image: postgres:latest
+    container_name: uberto_sql
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - '5432:5432'
+    volumes:
+      - db:/var/lib/postgresql/data
+      - ./Docker/init_db.sh:/docker-entrypoint-initdb.d/01_init_db.sh
+
+  configsvr1:
+    image: mongo
+    container_name: configsvr1
+    command: mongod --configsvr --replSet configrs --port 27019
+    ports:
+      - 27019:27019
+    volumes:
+      - config1:/data/db
+
+  shard1a:
+    image: mongo
+    container_name: shard1a
+    command: mongod --shardsvr --replSet shard1rs --port 27018
+    ports:
+      - 27018:27018
+    volumes:
+      - shard1a:/data/db
+
+  shard2a:
+    image: mongo
+    container_name: shard2a
+    command: mongod --shardsvr --replSet shard2rs --port 27020
+    ports:
+      - 27020:27020
+    volumes:
+      - shard2a:/data/db
+
+  mongos:
+    image: mongo
+    container_name: mongos
+    depends_on:
+      - configsvr1
+      - shard1a
+      - shard2a
+    ports:
+      - 27017:27017
+    command: >
+      mongos --configdb configrs/configsvr1:27019 --bind_ip_all
+    volumes:
+      - ./Docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: mongo
+      MONGO_INITDB_ROOT_PASSWORD: mongo
+      MONGO_INITDB_DATABASE: uberto_mongo
+
+
+
+  pgadmin:
+    image: dpage/pgadmin4
+    container_name: pgadmin4_container_uberto
+    restart: always
+    ports:
+      - "5050:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@phm.edu.ar
+      PGADMIN_DEFAULT_PASSWORD: admin
+    volumes:
+      - pgadmin-data:/var/lib/pgadmin
+
+volumes:
+  db:
+  pgadmin-data:
+  config1:
+  shard1a:
+  shard2a:
+
+
