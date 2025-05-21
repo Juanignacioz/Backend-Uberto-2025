@@ -13,20 +13,51 @@ services:
       - db:/var/lib/postgresql/data
       - ./Docker/init_db.sh:/docker-entrypoint-initdb.d/01_init_db.sh
 
-  mongo:
-    image: mongo:latest
-    container_name: uberto_mongo
-    hostname: host-mongo
+  configsvr1:
+    image: mongo
+    container_name: configsvr1
+    command: mongod --configsvr --replSet configrs --port 27019
     ports:
-      - "27019:27017"
+      - 27019:27019
     volumes:
-      - ~/apps/uberto_mongo_db:/data/db
-      - ~/apps/uberto_mongo_log:/var/log/mongodb/
+      - config1:/data/db
+
+  shard1a:
+    image: mongo
+    container_name: shard1a
+    command: mongod --shardsvr --replSet shard1rs --port 27018
+    ports:
+      - 27018:27018
+    volumes:
+      - shard1a:/data/db
+
+  shard2a:
+    image: mongo
+    container_name: shard2a
+    command: mongod --shardsvr --replSet shard2rs --port 27020
+    ports:
+      - 27020:27020
+    volumes:
+      - shard2a:/data/db
+
+  mongos:
+    image: mongo
+    container_name: mongos
+    depends_on:
+      - configsvr1
+      - shard1a
+      - shard2a
+    ports:
+      - 27017:27017
+    command: >
+      mongos --configdb configrs/configsvr1:27019 --bind_ip_all
+    volumes:
       - ./Docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo
       MONGO_INITDB_ROOT_PASSWORD: mongo
       MONGO_INITDB_DATABASE: uberto_mongo
+
 
 
   pgadmin:
@@ -44,4 +75,8 @@ services:
 volumes:
   db:
   pgadmin-data:
+  config1:
+  shard1a:
+  shard2a:
+
 
