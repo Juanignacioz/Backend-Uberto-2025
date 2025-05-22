@@ -12,7 +12,7 @@ class ClickLogsController(
 ) {
 
     @PostMapping("/registrar")
-    @Operation(summary = "Registra un click en un conductor desde la búsqueda")
+    @Operation(summary = "Registra un click en un conductor desde la busqueda")
     fun registrarClick(
         @RequestBody registroClicks: RegistroClicksDTO,
         @RequestHeader("Authorization") bearerToken: String

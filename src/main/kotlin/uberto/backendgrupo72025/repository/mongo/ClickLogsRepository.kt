@@ -9,7 +9,6 @@ interface ClickLogRepository : MongoRepository<ClickLogs, String> {
 
   fun countByConductorId(conductorId: String): Int
 
-  fun findByconductorId(conductorId: String): Int
 
 
 }
