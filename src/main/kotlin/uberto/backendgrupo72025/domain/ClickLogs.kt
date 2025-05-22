@@ -8,6 +8,7 @@ data class ClickLogs(
     @Id
     val id: String? = null,
     val conductorNombre: String,
+    val conductorId: String? = null,
     val usuarioId: String,
     val fechaHora: LocalDateTime = LocalDateTime.now()
 )

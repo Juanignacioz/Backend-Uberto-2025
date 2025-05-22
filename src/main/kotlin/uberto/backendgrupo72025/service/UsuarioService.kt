@@ -19,6 +19,7 @@ class UsuarioService(
     val conductorRepository: ConductorRepository,
     val viajeService: ViajeService,
     val comentarioService: ComentarioService,
+    val clicksLogsRepository: ClickLogRepository
 ) {
     @Autowired
     lateinit var tokenUtils: TokenUtils
@@ -176,7 +177,8 @@ class UsuarioService(
             .plusMinutes(busquedaDTO.duracion.toLong())
         val conductoresDisponibles = conductorRepository.findByIdIn(viajeService.getConductoresDisponibles(nuevaFecha, nuevaFechaFin))
         return conductoresDisponibles.map {
-            it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
+            val clicks = clicksLogsRepository.countByConductorId(it.id ?: "")
+            it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion, clicks)
         }
     }
 
