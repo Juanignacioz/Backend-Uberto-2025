@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
 
   db:
@@ -13,6 +15,7 @@ services:
       - db:/var/lib/postgresql/data
       - ./Docker/init_db.sh:/docker-entrypoint-initdb.d/01_init_db.sh
 
+  # Config servers
   configsvr1:
     image: mongo
     container_name: configsvr1
@@ -20,8 +23,23 @@ services:
     ports:
       - 27019:27019
     volumes:
-      - config1:/data/db
+      - config1_data:/data/db
 
+  configsvr2:
+    image: mongo
+    container_name: configsvr2
+    command: mongod --configsvr --replSet configrs --port 27019
+    volumes:
+      - config2_data:/data/db
+
+  configsvr3:
+    image: mongo
+    container_name: configsvr3
+    command: mongod --configsvr --replSet configrs --port 27019
+    volumes:
+      - config3_data:/data/db
+
+  # Shard 1
   shard1a:
     image: mongo
     container_name: shard1a
@@ -29,8 +47,23 @@ services:
     ports:
       - 27018:27018
     volumes:
-      - shard1a:/data/db
+      - shard1a_data:/data/db
 
+  shard1b:
+    image: mongo
+    container_name: shard1b
+    command: mongod --shardsvr --replSet shard1rs --port 27021
+    volumes:
+      - shard1b_data:/data/db
+
+  shard1c:
+    image: mongo
+    container_name: shard1c
+    command: mongod --shardsvr --replSet shard1rs --port 27022
+    volumes:
+      - shard1c_data:/data/db
+
+  # Shard 2
   shard2a:
     image: mongo
     container_name: shard2a
@@ -38,19 +71,40 @@ services:
     ports:
       - 27020:27020
     volumes:
-      - shard2a:/data/db
+      - shard2a_data:/data/db
 
+  shard2b:
+    image: mongo
+    container_name: shard2b
+    command: mongod --shardsvr --replSet shard2rs --port 27023
+    volumes:
+      - shard2b_data:/data/db
+
+  shard2c:
+    image: mongo
+    container_name: shard2c
+    command: mongod --shardsvr --replSet shard2rs --port 27024
+    volumes:
+      - shard2c_data:/data/db
+
+  # Mongos
   mongos:
     image: mongo
     container_name: mongos
     depends_on:
       - configsvr1
+      - configsvr2
+      - configsvr3
       - shard1a
+      - shard1b
+      - shard1c
       - shard2a
+      - shard2b
+      - shard2c
     ports:
       - 27017:27017
     command: >
-      mongos --configdb configrs/configsvr1:27019 --bind_ip_all
+      mongos --configdb configrs/configsvr1:27019,configsvr2:27019,configsvr3:27019 --bind_ip_all
     volumes:
       - ./Docker/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js:ro
     environment:
@@ -58,8 +112,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: mongo
       MONGO_INITDB_DATABASE: uberto_mongo
 
-
-
+  # PgAdmin
   pgadmin:
     image: dpage/pgadmin4
     container_name: pgadmin4_container_uberto
@@ -75,8 +128,14 @@ services:
 volumes:
   db:
   pgadmin-data:
-  config1:
-  shard1a:
-  shard2a:
+  config1_data:
+  config2_data:
+  config3_data:
+  shard1a_data:
+  shard1b_data:
+  shard1c_data:
+  shard2a_data:
+  shard2b_data:
+  shard2c_data:
 
 
