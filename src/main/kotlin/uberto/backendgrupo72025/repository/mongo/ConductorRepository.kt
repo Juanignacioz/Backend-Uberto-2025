@@ -4,6 +4,7 @@ import org.springframework.data.mongodb.repository.MongoRepository
 import org.springframework.data.mongodb.repository.Query
 import org.springframework.stereotype.Repository
 import uberto.backendgrupo72025.domain.Conductor
+import uberto.backendgrupo72025.domain.DataViaje
 import java.time.LocalDateTime
 
 @Repository

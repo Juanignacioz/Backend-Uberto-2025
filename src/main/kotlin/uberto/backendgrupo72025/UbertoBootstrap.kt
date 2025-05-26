@@ -16,17 +16,20 @@ class UbertoBootstrap(
     val comentarioRepository: ComentarioRepository,
     val viajeroRepository: ViajeroRepository,
     val conductorRepository: ConductorRepository,
-    val usuarioService: UsuarioService
+    val usuarioService: UsuarioService,
+    val dataViajeRepository: DataViajeRepository
     ) : InitializingBean {
 
 
     val logger: Logger = LoggerFactory.getLogger(UbertoBootstrap::class.java)
 
     override fun afterPropertiesSet() {
-        crearUsuarios()
         conductorRepository.deleteAll()
+        dataViajeRepository.deleteAll()
+        crearUsuarios()
         crearChoferes()
         crearViajes()
+
 //        crearComentarios()
     }
 
@@ -40,7 +43,7 @@ class UbertoBootstrap(
         telefono = 123456789,
         esChofer = false,
         foto = "",
-        saldo = 1500.50,
+        saldo = 1000000.0,
         amigos = mutableListOf()
     )
     val viajero2 = Viajero(
@@ -52,7 +55,7 @@ class UbertoBootstrap(
         telefono = 987654321,
         esChofer = false,
         foto = "",
-        saldo = 2300.75,
+        saldo = 23000000.75,
         amigos = mutableListOf()
     )
     val viajero3 = Viajero(
@@ -64,7 +67,7 @@ class UbertoBootstrap(
         telefono = 456789123,
         esChofer = false,
         foto = "",
-        saldo = 800.25,
+        saldo = 8000000.25,
         amigos = mutableListOf()
     )
     val viajero4 = Viajero(
@@ -158,12 +161,29 @@ class UbertoBootstrap(
                         fechaFin = fechaInicio.plusMinutes(duracion.toLong()),
                         cantidadDePasajeros = (1..3).random(),
                         duracion = duracion,
-                        importe = conductor.importeViaje((1..3).random(), (5..20).random())
+                        importe = conductor.importeViaje((1..3).random(), (5..20).random()),
+                        nombreYApellido = conductor.nombreYApellido(),
+                        fotoConductor = conductor.foto
+
                     )
                 )
             }
         }
-        viajes.forEach { viajeRepository.save(it) }
+//       viajes.forEach { viajeRepository.save(it)}
+//       viajes.forEach { dataViajeRepository.save(DataViaje(it.id,it.conductorId,it.fechaInicio, it.fechaFin))}
+        viajes.forEach { viaje ->
+            val viajeGuardado = viajeRepository.save(viaje)
+            dataViajeRepository.save(
+                DataViaje(
+                    id = viajeGuardado.id,
+                    conductorId = viajeGuardado.conductorId,
+                    fechaInicio = viajeGuardado.fechaInicio,
+                    fechaFin = viajeGuardado.fechaFin
+                )
+            )
+        }
+
+
     }
 
     // COMENTARIOS

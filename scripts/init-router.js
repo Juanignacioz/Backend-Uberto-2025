@@ -12,3 +12,4 @@ db.createUser({
 });
 
 sh.shardCollection("uberto_mongo.conductores", { username: "hashed" });
+

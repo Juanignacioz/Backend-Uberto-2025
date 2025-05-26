@@ -20,3 +20,7 @@ vemos como estan ocupados:
 
 Resultado:
 ![img.png](img.png)
+
+> todo junto:
+> 
+> docker exec -i configsvr1 mongosh --port 27019 < scripts/init-configserver.js && docker exec -i shard1a mongosh --port 27018 < scripts/init-shard01.js && docker exec -i shard2a mongosh --port 27020 < scripts/init-shard02.js && docker exec -i mongos mongosh --port 27017 < scripts/init-router.js

@@ -17,6 +17,10 @@ class Viaje(
     val viajero: Viajero = Viajero(),
     @Column(name = "conductor_id")
     val conductorId: String? = "",
+    @Column(name = "foto_conductor")
+    var fotoConductor: String? = "",
+    @Column(name = "nombre_y_apellido_conductor")
+    var nombreYApellido: String? = "",
     @Column(length = 50)
     val origen: String = "",
     @Column(length = 50)

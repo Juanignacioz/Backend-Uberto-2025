@@ -174,7 +174,8 @@ class UsuarioService(
         val nuevaFecha = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
         val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
             .plusMinutes(busquedaDTO.duracion.toLong())
-        val conductoresDisponibles = conductorRepository.findByIdIn(viajeService.getConductoresDisponibles(nuevaFecha, nuevaFechaFin))
+        val conductoresDisponibles =
+            conductorRepository.findByIdIn(viajeService.getConductoresDisponibles(nuevaFecha, nuevaFechaFin))
         return conductoresDisponibles.map {
             it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
         }
@@ -192,6 +193,7 @@ class UsuarioService(
         val viaje = viajeService.crearViaje(viajeDTO, viajero, conductor)
         viajero.contratarViaje(viaje)
         viajeroRepository.save(viajero)
+
     }
 
     fun validarPuedeRealizarseViaje(viajero: Viajero, idConductor: String?, viajeDTO: ViajeDTO) {
