@@ -19,6 +19,7 @@ class UsuarioService(
     val conductorRepository: ConductorRepository,
     val viajeService: ViajeService,
     val comentarioService: ComentarioService,
+    val dataViajeRepository: DataViajeRepository
 ) {
     @Autowired
     lateinit var tokenUtils: TokenUtils
@@ -175,7 +176,7 @@ class UsuarioService(
         val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
             .plusMinutes(busquedaDTO.duracion.toLong())
         val conductoresDisponibles =
-            conductorRepository.findByIdIn(viajeService.getConductoresDisponibles(nuevaFecha, nuevaFechaFin))
+            conductorRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin)
         return conductoresDisponibles.map {
             it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
         }
