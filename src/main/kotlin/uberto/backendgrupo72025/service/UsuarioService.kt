@@ -250,8 +250,7 @@ class UsuarioService(
             }
         } else {
             comentarioService.getComentariosConductor(userID).map {
-                val conductor = getConductorById(it.viaje.conductorId)
-                it.toComentarioDTO(conductor.nombreYApellido(), conductor.foto)
+                it.toComentarioDTO(it.viaje.nombreYApellidoConductor, it.viaje.fotoConductor)
             }
         }
     }
@@ -268,10 +267,9 @@ class UsuarioService(
             totalFacturado = viajeService.getTotalFacturado(userID)
         } else {
             viajesRealizadosDTO = viajeService.getViajesRealizadosByViajero(userID).map {
-                val conductor = getConductorById(it.conductorId)
                 it.toViajeDTO(
-                    conductor.nombreYApellido(),
-                    conductor.foto,
+                    it.nombreYApellidoConductor,
+                    it.fotoConductor,
                     viajeService.viajeCalificable(it)
                 )
             }
@@ -286,10 +284,9 @@ class UsuarioService(
             viajeService.getViajesPendientesByConductor(userID)
         } else {
             viajeService.getViajesPendientesByViajero(userID).map {
-                val conductor = getConductorById(it.conductorId)
                 it.toViajeDTO(
-                    conductor.nombreYApellido(),
-                    conductor.foto,
+                    it.nombreYApellidoConductor,
+                    it.fotoConductor,
                     viajeService.viajeCalificable(it)
                 )
             }

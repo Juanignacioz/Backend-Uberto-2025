@@ -38,7 +38,10 @@ fun ViajeDTO.toViaje(viajero: Viajero, conductor: Conductor) = Viaje(
     fechaFin = LocalDateTime.parse(fechaInicio, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")).plusMinutes(duracion.toLong()),
     cantidadDePasajeros = cantidadDePasajeros,
     duracion = duracion,
-    importe = importe
+    importe = importe,
+    fotoConductor = conductor.foto,
+    nombreYApellidoConductor = conductor.nombreYApellido()
+
 )
 
 fun Viaje.toViajeDTO(nombre: String, foto : String, puedeCalificar: Boolean) = ViajeDTO(
