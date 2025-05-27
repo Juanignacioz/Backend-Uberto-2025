@@ -15,30 +15,14 @@ interface ConductorRepository : MongoRepository<Conductor, String> {
     fun findByUsernameAndContrasenia(username: String, contrasenia: String): Conductor?
 
     //fun findByIdIn(ids: List<String>): List<Conductor>
-    @Aggregation(
-        "{ '\$lookup': { " +
-                "    'from': 'viaje_resumido', " +
-                "    'let': { 'conductorId': '\$_id' }, " +
-                "    'pipeline': [ " +
-                "        { " +
-                "            '\$match': { " +
-                "                '\$expr': { " +
-                "                    '\$and': [ " +
-                "                        { '\$eq': [ '\$conductorId', '$\$conductorId' ] }, " +
-                "                        { '\$lt': [ '\$fechaInicio', ?0 ] }, " +
-                "                        { '\$gt': [ '\$fechaFin', ?1 ] } " +
-                "                    ] " +
-                "                } " +
-                "            } " +
-                "        } " +
-                "    ], " +
-                "    'as': 'viajesSuperpuestos' " +
-                "} }",
-        "{ '\$match':  { \"viajesSuperpuestos.0\": { '\$exists': false } }}"
-    )
+    @Aggregation(pipeline = [
+        "{ \$addFields: { idConductorStr: { \$toString: \"\$_id\" } } }",
+        "{ \$lookup: { from: \"viaje_resumido\", let: { idConductor: \"\$idConductorStr\" }, pipeline: [ { \$match: { \$expr: { \$and: [ { \$eq: [ \"\$conductorId\", \"$\$idConductor\" ] }, { \$lt: [ \"\$fechaInicio\", ?1 ] }, { \$gte: [ \"\$fechaFin\", ?0 ] } ] } } } ], as: \"viajesSolapados\" } } ",
+        "{ \$match: { viajesSolapados: { \$size: 0 } } }"
+    ])
     fun findConductoresDisponibles(
-        fechaInicio: LocalDateTime,  // ?0
-        fechaFin: LocalDateTime      // ?1
+        nuevaFechaInicio: LocalDateTime,
+        nuevaFechaFin: LocalDateTime
     ): List<Conductor>
 
 
