@@ -54,7 +54,7 @@ class UbertoBootstrap(
         contrasenia = "secure456",
         telefono = 987654321,
         esChofer = false,
-        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1746746139/zaokilhi7nolqotunsc2.jpg",
+        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1743109126/h0mmvlzszwfihmeb60tx.jpg",
         saldo = 23000000.75,
         amigos = mutableListOf()
     )
