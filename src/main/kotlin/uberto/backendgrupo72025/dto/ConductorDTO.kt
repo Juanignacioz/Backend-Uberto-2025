@@ -27,4 +27,5 @@ fun Conductor.toConductorDTO(cantidadDePasajeros: Int, duracion: Int) = Conducto
         importe = importeViaje(cantidadDePasajeros, duracion),
         foto = foto,
         esChofer = esChofer
+
     )
