@@ -4,6 +4,7 @@ Integrante 2: Saber cuántos choferes son del tipo moto.
 db.conductores.countDocuments({
   "vehiculo.tipo": "moto"
 })
+
 Integrante 3: Saber qué choferes tienen más de 4 puntos de calificación.
 db.conductores.find({
   "calificacion": { $gt: 4 }
@@ -12,7 +13,7 @@ db.conductores.find({
   "nombre": 1,
   "apellido": 1,
   "calificacion": 1
-}))
+})
 
 Integrante 4: Saber qué choferes tienen un costo base entre $1.000 y $5.000.
 db.conductores.find({
