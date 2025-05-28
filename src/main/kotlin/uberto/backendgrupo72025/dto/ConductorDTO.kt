@@ -13,10 +13,10 @@ data class ConductorDTO(
     val marca: String,
     val anio: Int,
     val foto: String,
-    val esChofer: Boolean,
-    val cantidadDeClicks: Int)
+    val esChofer: Boolean
+)
 
-fun Conductor.toConductorDTO(cantidadDePasajeros: Int, duracion: Int, cantidadDeClicks:Int) = ConductorDTO(
+fun Conductor.toConductorDTO(cantidadDePasajeros: Int, duracion: Int) = ConductorDTO(
         id = id,
         nombreYApellido = nombreYApellido(),
         dominio = vehiculo.dominio,
@@ -26,7 +26,6 @@ fun Conductor.toConductorDTO(cantidadDePasajeros: Int, duracion: Int, cantidadDe
         calificacion = calificacion,
         importe = importeViaje(cantidadDePasajeros, duracion),
         foto = foto,
-        esChofer = esChofer,
-        cantidadDeClicks = cantidadDeClicks
+        esChofer = esChofer
 
     )

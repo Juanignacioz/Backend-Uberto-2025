@@ -177,8 +177,7 @@ class UsuarioService(
             .plusMinutes(busquedaDTO.duracion.toLong())
         val conductoresDisponibles = conductorRepository.findByIdIn(viajeService.getConductoresDisponibles(nuevaFecha, nuevaFechaFin))
         return conductoresDisponibles.map {
-            val clicks = clicksLogsRepository.countByConductorId(it.id ?: "")
-            it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion, clicks)
+            it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
         }
     }
 
