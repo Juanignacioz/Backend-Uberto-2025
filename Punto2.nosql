@@ -32,3 +32,67 @@ db.conductores.find({
 })
 
 Integrante 5: Saber qué choferes tienen todos los viajes terminados.
+db.conductores.aggregate([
+  {
+    $addFields: {
+      idConductorStr: { $toString: "$_id" }
+    }
+  },
+  {
+    $lookup: {
+      from: "viaje_resumido",
+      let: { idConductor: "$idConductorStr" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$conductorId", "$$idConductor"] },
+                { $lt: ["$fechaFin", new Date()] }           //  (fechaFin < hoy)
+              ]
+            }
+          }
+        }
+      ],
+      as: "viajesFinalizados"
+    }
+  },
+  {
+    $lookup: { // permite hacer "joins" en mongo
+      from: "viaje_resumido",
+      let: { idConductor: "$idConductorStr" },
+      pipeline: [
+        {
+          $match: { //si cumple o no
+            $expr: { //expresion
+              $and: [
+                { $eq: ["$conductorId", "$$idConductor"] },
+                { $gte: ["$fechaFin", new Date()] }     //mayor e igual
+              ]
+            }
+          }
+        }
+      ],
+      as: "viajesPendientes"
+    }
+  },
+  {
+    $addFields: {
+      totalPendientes: { $size: "$viajesPendientes" }
+    }
+  },
+  {
+    $match: {
+      totalPendientes: 0
+    }
+  },
+  {
+    $project: { //lo que va a mostrar
+      _id: 1,
+      nombreYapellido:{$concat:["$nombre"," ","$apellido"]},
+      viajesFinalizados: 1,
+      totalFinalizados: { $size: "$viajesFinalizados" }
+
+    }
+  }
+])
