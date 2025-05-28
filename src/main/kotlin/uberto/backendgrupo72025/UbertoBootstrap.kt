@@ -16,17 +16,20 @@ class UbertoBootstrap(
     val comentarioRepository: ComentarioRepository,
     val viajeroRepository: ViajeroRepository,
     val conductorRepository: ConductorRepository,
-    val usuarioService: UsuarioService
+    val usuarioService: UsuarioService,
+    val dataViajeRepository: DataViajeRepository
     ) : InitializingBean {
 
 
     val logger: Logger = LoggerFactory.getLogger(UbertoBootstrap::class.java)
 
     override fun afterPropertiesSet() {
-        crearUsuarios()
         conductorRepository.deleteAll()
+        dataViajeRepository.deleteAll()
+        crearUsuarios()
         crearChoferes()
         crearViajes()
+
 //        crearComentarios()
     }
 
@@ -39,8 +42,8 @@ class UbertoBootstrap(
         contrasenia = "pass123",
         telefono = 123456789,
         esChofer = false,
-        foto = "",
-        saldo = 1500.50,
+        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1748375420/yzn4herzts1biwnlpn9e.jpg",
+        saldo = 1000000.0,
         amigos = mutableListOf()
     )
     val viajero2 = Viajero(
@@ -51,8 +54,8 @@ class UbertoBootstrap(
         contrasenia = "secure456",
         telefono = 987654321,
         esChofer = false,
-        foto = "",
-        saldo = 2300.75,
+        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1746746139/zaokilhi7nolqotunsc2.jpg",
+        saldo = 23000000.75,
         amigos = mutableListOf()
     )
     val viajero3 = Viajero(
@@ -63,8 +66,8 @@ class UbertoBootstrap(
         contrasenia = "mypwd789",
         telefono = 456789123,
         esChofer = false,
-        foto = "",
-        saldo = 800.25,
+        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1746746263/poktdygjjmdd8n04zedy.jpg",
+        saldo = 8000000.25,
         amigos = mutableListOf()
     )
     val viajero4 = Viajero(
@@ -75,7 +78,7 @@ class UbertoBootstrap(
         contrasenia = "password1",
         telefono = 321654987,
         esChofer = false,
-        foto = "",
+        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1743014782/dntsqxo0znfbsdvgvygd.png",
         saldo = 3500.00,
         amigos = mutableListOf()
     )
@@ -100,7 +103,7 @@ class UbertoBootstrap(
         telefono = 111222333,
         esChofer = true,
         rol= ROLES.CONDUCTOR,
-        foto = "",
+        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1748375662/bcsidweeub4skeci8seq.jpg",
         vehiculo = vehiculoSimple,
         precioBaseDelViaje = 400.0
     )
@@ -113,7 +116,7 @@ class UbertoBootstrap(
         telefono = 444555666,
         esChofer = true,
         rol= ROLES.CONDUCTOR,
-        foto = "",
+        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1743109542/s4fwodoxz5tk9m9zhabc.jpg",
         vehiculo = vehiculoEjecutivo,
         precioBaseDelViaje = 600.0
     )
@@ -126,7 +129,7 @@ class UbertoBootstrap(
         telefono = 777888999,
         esChofer = true,
         rol= ROLES.CONDUCTOR,
-        foto = "",
+        foto = "https://res.cloudinary.com/diezou2of/image/upload/v1743109341/jg5csiav1bee9wlugrfj.jpg",
         vehiculo = vehiculoMoto,
         precioBaseDelViaje = 300.0
     )
@@ -158,12 +161,29 @@ class UbertoBootstrap(
                         fechaFin = fechaInicio.plusMinutes(duracion.toLong()),
                         cantidadDePasajeros = (1..3).random(),
                         duracion = duracion,
-                        importe = conductor.importeViaje((1..3).random(), (5..20).random())
+                        importe = conductor.importeViaje((1..3).random(), (5..20).random()),
+                        nombreYApellidoConductor = conductor.nombreYApellido(),
+                        fotoConductor = conductor.foto
+
                     )
                 )
             }
         }
-        viajes.forEach { viajeRepository.save(it) }
+//       viajes.forEach { viajeRepository.save(it)}
+//       viajes.forEach { dataViajeRepository.save(DataViaje(it.id,it.conductorId,it.fechaInicio, it.fechaFin))}
+        viajes.forEach { viaje ->
+            val viajeGuardado = viajeRepository.save(viaje)
+            dataViajeRepository.save(
+                DataViaje(
+                    id = viajeGuardado.id,
+                    conductorId = viajeGuardado.conductorId,
+                    fechaInicio = viajeGuardado.fechaInicio,
+                    fechaFin = viajeGuardado.fechaFin
+                )
+            )
+        }
+
+
     }
 
     // COMENTARIOS

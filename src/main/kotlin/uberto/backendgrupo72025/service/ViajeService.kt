@@ -2,19 +2,18 @@ package uberto.backendgrupo72025.service
 
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.stereotype.Service
+import uberto.backendgrupo72025.domain.*
 import uberto.backendgrupo72025.dto.*
-import uberto.backendgrupo72025.domain.Conductor
-import uberto.backendgrupo72025.domain.NotFoundException
-import uberto.backendgrupo72025.domain.Viaje
-import uberto.backendgrupo72025.domain.Viajero
 import uberto.backendgrupo72025.repository.jpa.ViajeRepository
 import uberto.backendgrupo72025.repository.mongo.ConductorRepository
+import uberto.backendgrupo72025.repository.mongo.DataViajeRepository
 import uberto.backendgrupo72025.security.TokenUtils
 import java.time.LocalDateTime
 
 @Service
 class ViajeService(
-    val viajeRepository: ViajeRepository
+    val viajeRepository: ViajeRepository,
+    val dataViajeRepository: DataViajeRepository
 ) {
 
     @Autowired
@@ -29,12 +28,19 @@ class ViajeService(
     fun getViajesByUsuarioId(idUsuario: String?) = viajeRepository.findByViajeroIdOrConductorId(idUsuario)
 
     fun crearViaje(viajeDTO: ViajeDTO, viajero: Viajero, conductor: Conductor): Viaje {
-        val viaje = viajeDTO.toViaje(viajero, conductor)
-        viajeRepository.save(viaje)
+        val viaje = viajeRepository.save( viajeDTO.toViaje(viajero, conductor))
+        dataViajeRepository.save(
+            DataViaje(
+                id = viaje.id,
+                conductorId = viaje.conductorId,
+                fechaInicio = viaje.fechaInicio,
+                fechaFin = viaje.fechaFin
+            )
+        )
         return viaje
     }
 
-    fun getViajesRealizadosByConductor(userID: String?): List<ViajeDTO>{
+    fun getViajesRealizadosByConductor(userID: String?): List<ViajeDTO> {
         return viajeRepository.findByConductorIdAndFechaFinBefore(userID).map {
             it.toViajeDTO(
                 it.viajero.nombreYApellido(),
@@ -73,7 +79,9 @@ class ViajeService(
 
     fun save(viaje: Viaje) {
         viajeRepository.save(viaje)
+
     }
-    
-    fun getConductoresDisponibles(nuevaFecha: LocalDateTime, nuevaFechaFin: LocalDateTime) = viajeRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin)
+
+    fun getConductoresDisponibles(nuevaFecha: LocalDateTime, nuevaFechaFin: LocalDateTime) =
+        viajeRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin)
 }

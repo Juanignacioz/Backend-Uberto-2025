@@ -23,6 +23,7 @@ interface ViajeRepository  : CrudRepository<Viaje, String?> {
 
     fun findByConductorIdAndFechaFinBefore(idConductor: String?, fechaFin: LocalDateTime = LocalDateTime.now()): List<Viaje>
 
+
     @Query("SELECT SUM(v.importe) FROM Viaje v " +
             "WHERE v.conductorId = :id " +
             "AND v.fechaFin < CURRENT_TIMESTAMP")

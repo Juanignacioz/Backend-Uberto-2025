@@ -29,7 +29,6 @@ abstract class Conductor(
     esChofer: Boolean = true,
     rol: ROLES = ROLES.CONDUCTOR,
     foto: String = "",
-    @Embedded
     var vehiculo: Vehiculo = Vehiculo(),
     var precioBaseDelViaje: Double = 0.0
 ) : Usuario(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer, rol, foto) {
