@@ -16,14 +16,20 @@ db.conductores.find({
 })
 
 Integrante 4: Saber qué choferes tienen un costo base entre $1.000 y $5.000.
-db.conductores.find({
-  "precioBaseDelViaje": { $gte: 1000, $lte: 5000 }
-}, {
-  "_id": 1,
-  "nombre": 1,
-  "apellido": 1,
-  "precioBaseDelViaje": 1
-})
+db.conductores.find(
+  {
+    $and: [
+      { precioBaseDelViaje: { $gte: 1000 } },
+      { precioBaseDelViaje: { $lte: 5000 } }
+    ]
+  },
+  {
+    _id: 1,
+    nombre: 1,
+    apellido: 1,
+    precioBaseDelViaje: 1
+  }
+)
 
 Integrante 5: Saber qué choferes tienen todos los viajes terminados.
 db.conductores.aggregate([
