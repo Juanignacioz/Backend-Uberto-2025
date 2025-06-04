@@ -125,6 +125,36 @@ services:
     volumes:
       - pgadmin-data:/var/lib/pgadmin
 
+  redis:
+    container_name: redis-uberto
+    hostname: redis
+    image: redis
+    ports:
+      - "6379:6379"
+
+  redis-commander:
+    container_name: redis-commander-uberto
+    hostname: redis-commander
+    image: rediscommander/redis-commander:latest
+    restart: always
+    environment:
+      - REDIS_HOSTS=local:redis:6379
+    ports:
+      - "8081:8081"
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: uberto-backend
+    ports:
+      - "4026:8080"
+    depends_on:
+      - mongos
+      - redis
+      - db
+
+
 volumes:
   db:
   pgadmin-data:

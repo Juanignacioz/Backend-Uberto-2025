@@ -36,6 +36,8 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
 
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
 	// seguridad y autenticación
 	implementation("org.springframework.boot:spring-boot-starter-security")
 	implementation("org.bouncycastle:bcprov-jdk15on:1.70")

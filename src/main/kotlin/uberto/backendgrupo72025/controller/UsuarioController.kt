@@ -33,8 +33,9 @@ class UsuarioController(@Autowired val usuarioService: UsuarioService) {
     @PostMapping("/home/buscar")
     @Operation(summary = "Devuelve los choferes disponibles")
     fun getChoferesDisponiles(
-        @RequestBody busquedaDTO: BusquedaDTO
-    ) = usuarioService.getChoferesDisponibles(busquedaDTO)
+        @RequestBody busquedaDTO: BusquedaDTO,
+        @RequestHeader("Authorization") bearerToken: String
+    ) = usuarioService.getChoferesDisponibles(bearerToken, busquedaDTO)
 
     @DeleteMapping("/eliminarAmigo/{friendId}")
     @Operation(summary = "Elimina a un amigo de la lista de amigos del viajero")

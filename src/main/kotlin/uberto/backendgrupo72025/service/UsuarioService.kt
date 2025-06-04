@@ -19,7 +19,7 @@ class UsuarioService(
     val conductorRepository: ConductorRepository,
     val viajeService: ViajeService,
     val comentarioService: ComentarioService,
-    val dataViajeRepository: DataViajeRepository
+    val ultimaBusquedaRepository: BusquedaRepository
 ) {
     @Autowired
     lateinit var tokenUtils: TokenUtils
@@ -171,12 +171,15 @@ class UsuarioService(
         viajeroRepository.save(usuario)
     }
 
-    fun getChoferesDisponibles(busquedaDTO: BusquedaDTO): List<ConductorDTO> {
+    fun getChoferesDisponibles(bearerToken: String, busquedaDTO: BusquedaDTO): List<ConductorDTO> {
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val nuevaFecha = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
         val nuevaFechaFin = LocalDateTime.parse(busquedaDTO.fecha, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"))
             .plusMinutes(busquedaDTO.duracion.toLong())
         val conductoresDisponibles =
             conductorRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin)
+        val ultima = busquedaDTO.toUltimaBusqueda(userID, nuevaFecha)
+        ultimaBusquedaRepository.save(ultima)
         return conductoresDisponibles.map {
             it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
         }
