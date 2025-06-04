@@ -6,10 +6,9 @@ import java.util.*
 
 @RedisHash("ultimaBusqueda",timeToLive = 18000)
 data class UltimaBusqueda(
-    //@Id
-    //@GeneratedValue(strategy = GenerationType.UUID)
+
     @Id
-    val id: String = UUID.randomUUID().toString(),
+    val id: String = UUID.randomUUID().toString(),//
     val viajeroId: String="",
     val origen: String="",
     val destino: String="",
