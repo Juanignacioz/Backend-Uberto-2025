@@ -12,9 +12,8 @@ import org.springframework.data.annotation.Id
 
 @Document("viaje_resumido")
 data class DataViaje(
-    //@Id
-//    @GeneratedValue(strategy = GenerationType.UUID)
-    val id: String? = "",
+
+    val id: String? = "",//id del viaje
     val conductorId: String? = "",
     @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     val fechaInicio: LocalDateTime = LocalDateTime.now(),

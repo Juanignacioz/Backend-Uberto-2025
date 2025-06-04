@@ -5,19 +5,10 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
 import org.springframework.data.annotation.Transient
 import org.springframework.data.mongodb.core.mapping.Document
-import org.springframework.data.mongodb.core.mapping.Field
+
 
 
 @Document(collection = "conductores")
-//@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include =
-//    JsonTypeInfo.As.PROPERTY, property = "type")
-//@JsonSubTypes(
-//    JsonSubTypes.Type(value = Simple::class, name = "Standard"),
-//    JsonSubTypes.Type(value = Ejecutivo::class, name = "Ejecutivo"),
-//    JsonSubTypes.Type(value = Moto::class, name = "Moto")
-//)
-//@Inheritance(strategy= InheritanceType.SINGLE_TABLE)
-//@DiscriminatorColumn(name = "tipo_de_conductor", discriminatorType = DiscriminatorType.STRING)
 abstract class Conductor(
     id: String? = null,
     nombre: String = "",

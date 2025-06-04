@@ -11,6 +11,8 @@ La primera vez en la terminar de bash(en secuencia):
 
 Para ver la reparticion ,En mongos puerto 27017 router:
 
+>docker exec -it mongos mongosh --port 27017
+
 swicheamos a la base de datos
 > use uberto_mongo 
 

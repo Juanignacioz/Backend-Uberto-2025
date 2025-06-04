@@ -21,8 +21,8 @@ interface ConductorRepository : MongoRepository<Conductor, String> {
         "{ \$match: { viajesSolapados: { \$size: 0 } } }"
     ])
     fun findConductoresDisponibles(
-        nuevaFechaInicio: LocalDateTime,
-        nuevaFechaFin: LocalDateTime
+        nuevaFechaInicio: LocalDateTime,//0
+        nuevaFechaFin: LocalDateTime//1
     ): List<Conductor>
 
 

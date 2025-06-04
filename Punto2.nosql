@@ -1,4 +1,19 @@
 Integrante 1: Saber qué chofer es el más clickeado.
+db.click_logs.aggregate([
+  {
+    $group: {
+      _id: "$conductorId",
+      conductor_Nombre: { $first: "$conductorNombre" },
+      totalClicks: { $sum: 1 }
+    }
+  },
+  {
+    $sort: { totalClicks: -1 }
+  },
+  {
+    $limit: 1
+  }
+])
 
 Integrante 2: Saber cuántos choferes son del tipo moto.
 db.conductores.countDocuments({
@@ -81,7 +96,7 @@ db.conductores.aggregate([
     }
   },
   {
-    $project: { //lo que va a mostrar
+    $project: { //
       _id: 1,
       nombreYapellido:{$concat:["$nombre"," ","$apellido"]},
       viajesFinalizados: 1,
