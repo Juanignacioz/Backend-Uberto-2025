@@ -178,8 +178,8 @@ class UsuarioService(
             .plusMinutes(busquedaDTO.duracion.toLong())
         val conductoresDisponibles =
             conductorRepository.findConductoresDisponibles(nuevaFecha, nuevaFechaFin)
-        val ultima = busquedaDTO.toUltimaBusqueda(userID, nuevaFecha)
-        ultimaBusquedaRepository.save(ultima)
+        val ultimaBusqueda = busquedaDTO.toUltimaBusqueda(userID, nuevaFecha)
+        ultimaBusquedaRepository.save(ultimaBusqueda)
         return conductoresDisponibles.map {
             it.toConductorDTO(busquedaDTO.cantidadDePasajeros, busquedaDTO.duracion)
         }
@@ -298,7 +298,8 @@ class UsuarioService(
 
     fun getUltimaBusquedaPorViajero(bearerToken: String) : UltimaBusqueda? {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-         return ultimaBusquedaRepository.findTopByViajeroIdOrderByFechaDesc(userID)
+        return ultimaBusquedaRepository.findLastByViajeroIdOrderByCreatedAtDesc(userID) // mas de un registro
+//      return ultimaBusquedaRepository.findById(userID).orElseThrow { NotFoundException("no se encontro  busqueda") } //uno solo
     }
 
 }
