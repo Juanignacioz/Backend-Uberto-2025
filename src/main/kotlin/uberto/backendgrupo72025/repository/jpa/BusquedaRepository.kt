@@ -6,4 +6,13 @@ import uberto.backendgrupo72025.domain.Comentario
 import uberto.backendgrupo72025.domain.UltimaBusqueda
 
 @Repository
-interface BusquedaRepository  : CrudRepository<UltimaBusqueda, String?> {}
+interface BusquedaRepository : CrudRepository<UltimaBusqueda, String?> {
+
+
+    fun findTopByViajeroIdOrderByFechaDesc(viajeroId: String): UltimaBusqueda? //lo ordena desenciende y encuentra el ultimo
+
+    fun findByFecha_Max(viajeroId: String): UltimaBusqueda?
+
+    fun findTopByViajeroIdOrderByttlDesc(viajeroId: String): UltimaBusqueda? //lo ordena desenciende y encuentra el ultimo
+
+}

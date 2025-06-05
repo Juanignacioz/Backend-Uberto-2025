@@ -3,6 +3,7 @@ package uberto.backendgrupo72025.controller
 import io.swagger.v3.oas.annotations.Operation
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
+import uberto.backendgrupo72025.domain.UltimaBusqueda
 import uberto.backendgrupo72025.dto.*
 
 import uberto.backendgrupo72025.service.UsuarioService
@@ -78,5 +79,11 @@ class UsuarioController(@Autowired val usuarioService: UsuarioService) {
         @RequestHeader("Authorization") bearerToken: String,
         @RequestParam imagen: String
     ) = usuarioService.actualizarImagen(bearerToken, imagen)
+
+    @GetMapping("/ultimaBusqueda")
+    @Operation(summary = "Devuelve la ultima busqueda")
+    fun getUltimaBusqueda(
+        @RequestHeader("Authorization") bearerToken: String
+    ): UltimaBusqueda? = usuarioService.getUltimaBusquedaPorViajero(bearerToken)
 
 }

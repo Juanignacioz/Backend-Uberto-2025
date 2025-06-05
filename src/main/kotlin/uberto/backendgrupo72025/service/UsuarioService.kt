@@ -296,4 +296,9 @@ class UsuarioService(
         }
     }
 
+    fun getUltimaBusquedaPorViajero(bearerToken: String) : UltimaBusqueda? {
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
+         return ultimaBusquedaRepository.findTopByViajeroIdOrderByFechaDesc(userID)
+    }
+
 }
