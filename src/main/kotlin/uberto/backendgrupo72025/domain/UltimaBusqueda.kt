@@ -7,11 +7,9 @@ import org.springframework.data.redis.core.index.Indexed
 import java.time.LocalDateTime
 import java.util.*
 
-@RedisHash("ultimaBusqueda", timeToLive = 18000)
+@RedisHash("ultimaBusqueda", timeToLive =180 )
 data class UltimaBusqueda(
     @Id
-    val id: String = UUID.randomUUID().toString(),
-    @Indexed
     val viajeroId: String = "",
     val origen: String = "",
     val destino: String = "",

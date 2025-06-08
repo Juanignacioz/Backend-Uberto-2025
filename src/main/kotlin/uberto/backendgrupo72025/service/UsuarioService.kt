@@ -296,7 +296,7 @@ class UsuarioService(
         }
     }
 
-    fun getUltimaBusquedaPorViajero(bearerToken: String) : UltimaBusqueda? {
+    fun getUltimaBusquedaPorViajero(bearerToken: String): UltimaBusqueda? {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         return ultimaBusquedaRepository.findLastByViajeroIdOrderByCreatedAtDesc(userID) // mas de un registro
 //      return ultimaBusquedaRepository.findById(userID).orElseThrow { NotFoundException("no se encontro  busqueda") } //uno solo
