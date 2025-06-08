@@ -1,6 +1,7 @@
 package uberto.backendgrupo72025.service
 
 import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.data.repository.findByIdOrNull
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 import uberto.backendgrupo72025.dto.*
@@ -298,8 +299,7 @@ class UsuarioService(
 
     fun getUltimaBusquedaPorViajero(bearerToken: String): UltimaBusqueda? {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return ultimaBusquedaRepository.findLastByViajeroIdOrderByCreatedAtDesc(userID) // mas de un registro
-//      return ultimaBusquedaRepository.findById(userID).orElseThrow { NotFoundException("no se encontro  busqueda") } //uno solo
+        return ultimaBusquedaRepository.findByIdOrNull(userID) //uno solo y si no hay ninguno devuelve null
     }
 
 }

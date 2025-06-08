@@ -8,6 +8,6 @@ import uberto.backendgrupo72025.domain.UltimaBusqueda
 @Repository
 interface BusquedaRepository : CrudRepository<UltimaBusqueda, String?> {
 
-    fun findLastByViajeroIdOrderByCreatedAtDesc(viajeroId: String): UltimaBusqueda?
+//    fun findLastByViajeroIdOrderByCreatedAtDesc(viajeroId: String): UltimaBusqueda?
 
 }
