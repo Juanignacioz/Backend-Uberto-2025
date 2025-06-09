@@ -68,7 +68,7 @@ class TokenUtils {
         }
     }
 
-    fun authenticate(bearerToken: String): Pair<String, Boolean> {
+    fun decodificatorAuth(bearerToken: String): Pair<String, Boolean> {
         val authentication = getAuthentication(bearerToken)
         val userID = authentication.name
         val esChofer = authentication.authorities.any { it.authority.equals("CONDUCTOR", ignoreCase = false) }

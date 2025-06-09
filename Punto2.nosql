@@ -1,0 +1,98 @@
+Integrante 1: Saber qué chofer es el más clickeado.
+
+Integrante 2: Saber cuántos choferes son del tipo moto.
+db.conductores.countDocuments({
+  "vehiculo.tipo": "moto"
+})
+
+Integrante 3: Saber qué choferes tienen más de 4 puntos de calificación.
+db.conductores.find({
+  "calificacion": { $gt: 4 }
+}, {
+  "_id": 1,
+  "nombre": 1,
+  "apellido": 1,
+  "calificacion": 1
+})
+
+Integrante 4: Saber qué choferes tienen un costo base entre $1.000 y $5.000.
+db.conductores.find(
+  {
+    $and: [
+      { precioBaseDelViaje: { $gte: 1000 } },
+      { precioBaseDelViaje: { $lte: 5000 } }
+    ]
+  },
+  {
+    _id: 1,
+    nombre: 1,
+    apellido: 1,
+    precioBaseDelViaje: 1
+  }
+)
+
+Integrante 5: Saber qué choferes tienen todos los viajes terminados.
+db.conductores.aggregate([
+  {
+    $addFields: {
+      idConductorStr: { $toString: "$_id" }
+    }
+  },
+  {
+    $lookup: {
+      from: "viaje_resumido",
+      let: { idConductor: "$idConductorStr" },
+      pipeline: [
+        {
+          $match: {
+            $expr: {
+              $and: [
+                { $eq: ["$conductorId", "$$idConductor"] },
+                { $lt: ["$fechaFin", new Date()] }           //  (fechaFin < hoy)
+              ]
+            }
+          }
+        }
+      ],
+      as: "viajesFinalizados"
+    }
+  },
+  {
+    $lookup: { // permite hacer "joins" en mongo
+      from: "viaje_resumido",
+      let: { idConductor: "$idConductorStr" },
+      pipeline: [
+        {
+          $match: { //si cumple o no
+            $expr: { //expresion
+              $and: [
+                { $eq: ["$conductorId", "$$idConductor"] },
+                { $gte: ["$fechaFin", new Date()] }     //mayor e igual
+              ]
+            }
+          }
+        }
+      ],
+      as: "viajesPendientes"
+    }
+  },
+  {
+    $addFields: {
+      totalPendientes: { $size: "$viajesPendientes" }
+    }
+  },
+  {
+    $match: {
+      totalPendientes: 0
+    }
+  },
+  {
+    $project: { //lo que va a mostrar
+      _id: 1,
+      nombreYapellido:{$concat:["$nombre"," ","$apellido"]},
+      viajesFinalizados: 1,
+      totalFinalizados: { $size: "$viajesFinalizados" }
+
+    }
+  }
+])

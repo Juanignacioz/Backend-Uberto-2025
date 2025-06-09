@@ -31,20 +31,23 @@ data class ViajesCompletadosDTO(
 
 fun ViajeDTO.toViaje(viajero: Viajero, conductor: Conductor) = Viaje(
     viajero = viajero,
-    conductor = conductor,
+    conductorId = conductor.id,
     origen = origen,
     destino =  destino,
     fechaInicio = LocalDateTime.parse(fechaInicio, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")),
     fechaFin = LocalDateTime.parse(fechaInicio, DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")).plusMinutes(duracion.toLong()),
     cantidadDePasajeros = cantidadDePasajeros,
     duracion = duracion,
-    importe = importe
+    importe = importe,
+    fotoConductor = conductor.foto,
+    nombreYApellidoConductor = conductor.nombreYApellido()
+
 )
 
 fun Viaje.toViajeDTO(nombre: String, foto : String, puedeCalificar: Boolean) = ViajeDTO(
     idViaje = id,
     idViajero = viajero.id,
-    idConductor = conductor.id,
+    idConductor = conductorId,
     nombre = nombre,
     origen = origen,
     destino =  destino,

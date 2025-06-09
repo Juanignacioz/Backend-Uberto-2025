@@ -1,4 +1,4 @@
-package uberto.backendgrupo72025.repository
+package uberto.backendgrupo72025.repository.jpa
 
 
 import org.springframework.data.jpa.repository.Query
@@ -15,7 +15,7 @@ interface ComentarioRepository  : CrudRepository<Comentario, String?> {
 
     @Query("SELECT COALESCE(ROUND(AVG(c.estrellas), 2), 0.0) FROM Comentario c " +
             "INNER JOIN Viaje v on v.id = c.viaje.id " +
-            "where v.conductor.id = :idConductor and c.active = true")
+            "where v.conductorId = :idConductor and c.active = true")
     fun promedioEstrellasByConductor(idConductor: String?): Double
 
     fun existsByViajeIdAndActive(viajeId: String?, active: Boolean): Boolean

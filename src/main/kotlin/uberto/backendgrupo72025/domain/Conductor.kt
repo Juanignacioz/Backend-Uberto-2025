@@ -3,19 +3,21 @@ package uberto.backendgrupo72025.domain
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import jakarta.persistence.*
-import jakarta.validation.constraints.Min
+import org.springframework.data.annotation.Transient
+import org.springframework.data.mongodb.core.mapping.Document
+import org.springframework.data.mongodb.core.mapping.Field
 
-@Entity
-@Table(name = "conductores")
-@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include =
-    JsonTypeInfo.As.PROPERTY, property = "type")
-@JsonSubTypes(
-    JsonSubTypes.Type(value = Simple::class, name = "Standard"),
-    JsonSubTypes.Type(value = Ejecutivo::class, name = "Ejecutivo"),
-    JsonSubTypes.Type(value = Moto::class, name = "Moto")
-)
-@Inheritance(strategy= InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "tipo_de_conductor", discriminatorType = DiscriminatorType.STRING)
+
+@Document(collection = "conductores")
+//@JsonTypeInfo(use = JsonTypeInfo.Id.NAME, include =
+//    JsonTypeInfo.As.PROPERTY, property = "type")
+//@JsonSubTypes(
+//    JsonSubTypes.Type(value = Simple::class, name = "Standard"),
+//    JsonSubTypes.Type(value = Ejecutivo::class, name = "Ejecutivo"),
+//    JsonSubTypes.Type(value = Moto::class, name = "Moto")
+//)
+//@Inheritance(strategy= InheritanceType.SINGLE_TABLE)
+//@DiscriminatorColumn(name = "tipo_de_conductor", discriminatorType = DiscriminatorType.STRING)
 abstract class Conductor(
     id: String? = null,
     nombre: String = "",
@@ -25,15 +27,12 @@ abstract class Conductor(
     contrasenia: String = "",
     telefono: Int = 0,
     esChofer: Boolean = true,
-    rol: ROLES,
+    rol: ROLES = ROLES.CONDUCTOR,
     foto: String = "",
-    @OneToOne (cascade = [(CascadeType.ALL)])
     var vehiculo: Vehiculo = Vehiculo(),
-    @Column
     var precioBaseDelViaje: Double = 0.0
 ) : Usuario(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer, rol, foto) {
 
-    @Column
     var calificacion: Double = 0.0
 
     @Transient
