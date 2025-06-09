@@ -7,6 +7,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 import uberto.backendgrupo72025.repository.jpa.*
 import uberto.backendgrupo72025.repository.mongo.*
+import uberto.backendgrupo72025.repository.neo4j.AmigoRepository
 import uberto.backendgrupo72025.service.UsuarioService
 import java.time.LocalDateTime
 
@@ -17,8 +18,10 @@ class UbertoBootstrap(
     val viajeroRepository: ViajeroRepository,
     val conductorRepository: ConductorRepository,
     val usuarioService: UsuarioService,
-    val dataViajeRepository: DataViajeRepository
-    ) : InitializingBean {
+    val dataViajeRepository: DataViajeRepository,
+    val amigoRepository: AmigoRepository,
+    val busquedaRepository: BusquedaRepository
+) : InitializingBean {
 
 
     val logger: Logger = LoggerFactory.getLogger(UbertoBootstrap::class.java)
@@ -26,6 +29,7 @@ class UbertoBootstrap(
     override fun afterPropertiesSet() {
         conductorRepository.deleteAll()
         dataViajeRepository.deleteAll()
+        busquedaRepository.deleteAll()
         crearUsuarios()
         crearChoferes()
         crearViajes()
@@ -83,8 +87,12 @@ class UbertoBootstrap(
         amigos = mutableListOf()
     )
 
+
     fun crearUsuarios() {
-        listOf(viajero1, viajero2, viajero3, viajero4).forEach { viajeroRepository.save(it) }
+        val viajeros = listOf(viajero1, viajero2, viajero3, viajero4)
+        viajeros.forEach { viajeroRepository.save(it) }
+//        val amigos = viajeros.map { it.toAmigo() }
+//        amigos.forEach { amigoRepository.save(it) }
     }
 
     // VEHICULOS

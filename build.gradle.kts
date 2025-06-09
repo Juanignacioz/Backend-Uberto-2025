@@ -30,13 +30,7 @@ dependencies {
 	implementation("org.springdoc:springdoc-openapi-starter-common:2.2.0")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
-	implementation ("jakarta.persistence:jakarta.persistence-api:3.1.0")
-	runtimeOnly("org.postgresql:postgresql")
-	implementation("org.postgresql:postgresql:42.7.2")
-	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 	developmentOnly("org.springframework.boot:spring-boot-devtools")
-
-	implementation("org.springframework.boot:spring-boot-starter-data-redis")
 
 	// seguridad y autenticación
 	implementation("org.springframework.boot:spring-boot-starter-security")
@@ -45,12 +39,22 @@ dependencies {
 	implementation("io.jsonwebtoken:jjwt-impl:0.12.6")
 	implementation("io.jsonwebtoken:jjwt-jackson:0.12.6")
 
-	//grafos
+	//Postgres
+	implementation ("jakarta.persistence:jakarta.persistence-api:3.1.0")
+	runtimeOnly("org.postgresql:postgresql")
+	implementation("org.postgresql:postgresql:42.7.2")
+	implementation("org.springframework.boot:spring-boot-starter-data-jpa")
 
 	//Mongo
 	implementation("org.springframework.boot:spring-boot-starter-data-mongodb")
 
-	//testing
+	//Redis
+	implementation("org.springframework.boot:spring-boot-starter-data-redis")
+
+	//Grafos - Neo4j
+	implementation("org.springframework.boot:spring-boot-starter-data-neo4j")
+
+	//Testing
 	testImplementation("org.springframework.security:spring-security-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 	testImplementation("org.jetbrains.kotlin:kotlin-test-junit5")

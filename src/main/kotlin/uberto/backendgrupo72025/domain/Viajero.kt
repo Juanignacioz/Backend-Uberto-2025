@@ -45,6 +45,7 @@ class Viajero(
 
     fun agregarAmigo(viajero: Viajero) {
         validarAmigoExistente(viajero)
+
         amigos.add(viajero)
     }
 

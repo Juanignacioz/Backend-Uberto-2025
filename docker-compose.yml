@@ -142,6 +142,27 @@ services:
     ports:
       - "8081:8081"
 
+  neo4j:
+    image: neo4j:latest
+    restart: unless-stopped
+    ports:
+      - 7474:7474
+      - 7687:7687
+    volumes:
+      - ./data/uberto/conf:/var/lib/neo4j/conf
+      - ./data/uberto/data:/var/lib/neo4j/data
+      - ./data/uberto/import:/var/lib/neo4j/import
+      - ./data/uberto/logs:/var/lib/neo4j/logs
+      - ./data/uberto/plugins:/var/lib/neo4j/plugins
+    environment:
+      # Raise memory limits
+      server.memory.pagecache.size: 1G
+      server.memory.heap.max_size: 1G
+      # auth
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+      NEO4J_AUTH: neo4j/tUelEMVlcoMTul5Tp85MYqbnubMwhX14giQCyuUg3Uc
+
+
   app:
     build:
       context: .
