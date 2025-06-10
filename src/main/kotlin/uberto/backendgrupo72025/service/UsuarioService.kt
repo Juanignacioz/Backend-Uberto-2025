@@ -14,7 +14,7 @@ import java.time.format.DateTimeFormatter
 
 
 @Service
-class UsuarioService(
+class   UsuarioService(
     val vehiculoService: VehiculoService,
     val viajeroRepository: ViajeroRepository,
     val conductorRepository: ConductorRepository,

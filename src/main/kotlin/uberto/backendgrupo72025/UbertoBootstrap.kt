@@ -1,13 +1,11 @@
 package uberto.backendgrupo72025
 
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 import uberto.backendgrupo72025.domain.*
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 import uberto.backendgrupo72025.repository.jpa.*
 import uberto.backendgrupo72025.repository.mongo.*
-import uberto.backendgrupo72025.repository.neo4j.AmigoRepository
+import uberto.backendgrupo72025.repository.neo4j.ViajeroNodeRepository
 import uberto.backendgrupo72025.service.UsuarioService
 import java.time.LocalDateTime
 
@@ -17,14 +15,11 @@ class UbertoBootstrap(
     val comentarioRepository: ComentarioRepository,
     val viajeroRepository: ViajeroRepository,
     val conductorRepository: ConductorRepository,
-    val usuarioService: UsuarioService,
     val dataViajeRepository: DataViajeRepository,
-    val amigoRepository: AmigoRepository,
-    val busquedaRepository: BusquedaRepository
+    val viajeroNodeRepository: ViajeroNodeRepository,
+    val busquedaRepository: BusquedaRepository,
+    val usuarioService: UsuarioService,
 ) : InitializingBean {
-
-
-    val logger: Logger = LoggerFactory.getLogger(UbertoBootstrap::class.java)
 
     override fun afterPropertiesSet() {
         conductorRepository.deleteAll()
@@ -33,7 +28,7 @@ class UbertoBootstrap(
         crearUsuarios()
         crearChoferes()
         crearViajes()
-
+        crearAmigos()
 //        crearComentarios()
     }
 
@@ -92,7 +87,7 @@ class UbertoBootstrap(
         val viajeros = listOf(viajero1, viajero2, viajero3, viajero4)
         viajeros.forEach { viajeroRepository.save(it) }
 //        val amigos = viajeros.map { it.toAmigo() }
-//        amigos.forEach { amigoRepository.save(it) }
+//        amigos.forEach { viajeroNodeRepository.save(it) }
     }
 
     // VEHICULOS
@@ -194,6 +189,12 @@ class UbertoBootstrap(
 
     }
 
+    // AMIGOS
+    fun crearAmigos() {
+        val viajeros = listOf(viajero1, viajero2, viajero3, viajero4).map { ViajeroNode(it) }
+        viajeros.map { viajeroNodeRepository.save(it) }
+    }
+
     // COMENTARIOS
 //    fun crearComentarios() {
 //        val viajesRealizados = viajeRepository.findAll().filter { it.fechaInicio.isBefore(LocalDateTime.now()) }
@@ -212,3 +213,4 @@ class UbertoBootstrap(
 //        comentarios.forEach { usuarioService.calificarViaje(it.viaje.viajero.id, CalificacionDTO(it.viaje.id, it.estrellas, it.mensaje)) }
 //    }
 }
+
