@@ -1,17 +1,18 @@
-package perritoteam.nochesmagicas.config
+package uberto.backendgrupo72025.config
 
-import org.neo4j.cypherdsl.core.renderer.Dialect
+import jakarta.persistence.EntityManagerFactory
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
-import org.springframework.data.jpa.repository.config.EnableJpaRepositories
-import org.springframework.data.mongodb.repository.config.EnableMongoRepositories
-import org.neo4j.cypherdsl.core.renderer.Configuration as CypherConfiguration
+import org.springframework.orm.jpa.JpaTransactionManager
+import org.springframework.transaction.PlatformTransactionManager
+import org.springframework.transaction.annotation.EnableTransactionManagement
 
 @Configuration
-class PersistenceConfig {
+@EnableTransactionManagement
+class Neo4JConfiguration {
 
     @Bean
-    fun cypherDslConfiguration(): CypherConfiguration =
-        CypherConfiguration.newConfig().withDialect(Dialect.NEO4J_5).build()
-
+    fun transactionManager(entityManagerFactory: EntityManagerFactory): PlatformTransactionManager {
+        return JpaTransactionManager(entityManagerFactory)
+    }
 }

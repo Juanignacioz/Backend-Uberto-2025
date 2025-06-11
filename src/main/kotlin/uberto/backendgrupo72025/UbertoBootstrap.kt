@@ -3,10 +3,13 @@ package uberto.backendgrupo72025
 import uberto.backendgrupo72025.domain.*
 import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
+import org.springframework.transaction.annotation.Transactional
+import uberto.backendgrupo72025.domain.neo4j.ConductorNode
+import uberto.backendgrupo72025.domain.neo4j.ViajeroNode
 import uberto.backendgrupo72025.repository.jpa.*
 import uberto.backendgrupo72025.repository.mongo.*
+import uberto.backendgrupo72025.repository.neo4j.ConductorNodeRepository
 import uberto.backendgrupo72025.repository.neo4j.ViajeroNodeRepository
-import uberto.backendgrupo72025.service.UsuarioService
 import java.time.LocalDateTime
 
 @Component
@@ -16,20 +19,26 @@ class UbertoBootstrap(
     val viajeroRepository: ViajeroRepository,
     val conductorRepository: ConductorRepository,
     val dataViajeRepository: DataViajeRepository,
-    val viajeroNodeRepository: ViajeroNodeRepository,
     val busquedaRepository: BusquedaRepository,
-    val usuarioService: UsuarioService,
+    val viajeroNodeRepository: ViajeroNodeRepository,
+    val conductorNodeRepository: ConductorNodeRepository,
 ) : InitializingBean {
 
+    @Transactional
     override fun afterPropertiesSet() {
-        conductorRepository.deleteAll()
-        dataViajeRepository.deleteAll()
-        busquedaRepository.deleteAll()
+        deleteAllData()
         crearUsuarios()
         crearChoferes()
         crearViajes()
-        crearAmigos()
 //        crearComentarios()
+    }
+
+    fun deleteAllData() {
+        conductorRepository.deleteAll()
+        dataViajeRepository.deleteAll()
+        busquedaRepository.deleteAll()
+        viajeroNodeRepository.deleteAll()
+        conductorNodeRepository.deleteAll()
     }
 
     // VIAJEROS
@@ -82,12 +91,12 @@ class UbertoBootstrap(
         amigos = mutableListOf()
     )
 
-
     fun crearUsuarios() {
         val viajeros = listOf(viajero1, viajero2, viajero3, viajero4)
         viajeros.forEach { viajeroRepository.save(it) }
-//        val amigos = viajeros.map { it.toAmigo() }
-//        amigos.forEach { viajeroNodeRepository.save(it) }
+        // Nodes
+        val viajerosNode = listOf(viajero1, viajero2, viajero3, viajero4).map { ViajeroNode(it) }
+        viajerosNode.forEach { viajeroNodeRepository.save(it) }
     }
 
     // VEHICULOS
@@ -138,7 +147,16 @@ class UbertoBootstrap(
     )
 
     fun crearChoferes() {
-        listOf(conductor1, conductor2, conductor3).forEach { conductorRepository.save(it) }
+//        listOf(conductor1, conductor2, conductor3).forEach { conductorRepository.save(it) }
+//        val conductoresNode = listOf(conductor1, conductor2, conductor3).map { ConductorNode(it) }
+//        conductoresNode.map { conductorNodeRepository.save(it) }
+
+
+        val conductores = listOf(conductor1, conductor2, conductor3)
+        conductores.forEach { conductorRepository.save(it) }
+        // Nodes
+        val conductoresNode = listOf(conductor1, conductor2, conductor3).map { ConductorNode(it) }
+        conductoresNode.forEach { conductorNodeRepository.save(it) }
     }
 
     // VIAJES
@@ -187,12 +205,6 @@ class UbertoBootstrap(
         }
 
 
-    }
-
-    // AMIGOS
-    fun crearAmigos() {
-        val viajeros = listOf(viajero1, viajero2, viajero3, viajero4).map { ViajeroNode(it) }
-        viajeros.map { viajeroNodeRepository.save(it) }
     }
 
     // COMENTARIOS
