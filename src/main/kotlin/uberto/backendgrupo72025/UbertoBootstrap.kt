@@ -30,6 +30,7 @@ class UbertoBootstrap(
         crearUsuarios()
         crearChoferes()
         crearViajes()
+        crearAmistades()
 //        crearComentarios()
     }
 
@@ -114,7 +115,7 @@ class UbertoBootstrap(
         contrasenia = "pass1234",
         telefono = 111222333,
         esChofer = true,
-        rol= ROLES.CONDUCTOR,
+        rol = ROLES.CONDUCTOR,
         foto = "https://res.cloudinary.com/diezou2of/image/upload/v1748375662/bcsidweeub4skeci8seq.jpg",
         vehiculo = vehiculoSimple,
         precioBaseDelViaje = 400.0
@@ -127,7 +128,7 @@ class UbertoBootstrap(
         contrasenia = "secure789",
         telefono = 444555666,
         esChofer = true,
-        rol= ROLES.CONDUCTOR,
+        rol = ROLES.CONDUCTOR,
         foto = "https://res.cloudinary.com/diezou2of/image/upload/v1743109542/s4fwodoxz5tk9m9zhabc.jpg",
         vehiculo = vehiculoEjecutivo,
         precioBaseDelViaje = 600.0
@@ -140,7 +141,7 @@ class UbertoBootstrap(
         contrasenia = "mypass567",
         telefono = 777888999,
         esChofer = true,
-        rol= ROLES.CONDUCTOR,
+        rol = ROLES.CONDUCTOR,
         foto = "https://res.cloudinary.com/diezou2of/image/upload/v1743109341/jg5csiav1bee9wlugrfj.jpg",
         vehiculo = vehiculoMoto,
         precioBaseDelViaje = 300.0
@@ -205,6 +206,13 @@ class UbertoBootstrap(
         }
 
 
+    }
+
+    // AMISTADES
+    fun crearAmistades() {
+        viajeroNodeRepository.crearAmistad(viajero1.id, viajero2.id)
+//        viajeroNodeRepository.crearAmistad(viajero1.id, viajero3.id)
+//        viajeroNodeRepository.crearAmistad(viajero1.id, viajero4.id)
     }
 
     // COMENTARIOS

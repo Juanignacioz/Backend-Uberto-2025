@@ -86,4 +86,9 @@ class UsuarioController(@Autowired val usuarioService: UsuarioService) {
         @RequestHeader("Authorization") bearerToken: String
     ): UltimaBusqueda? = usuarioService.getUltimaBusquedaPorViajero(bearerToken)
 
+    @GetMapping("/amigosNeo/{id}")
+    @Operation(summary = "Devuelve la ultima busqueda")
+    fun getAmigos(@PathVariable id : String
+    ): List<AmigoDTO> = usuarioService.getAmigosNeo(id)
+
 }

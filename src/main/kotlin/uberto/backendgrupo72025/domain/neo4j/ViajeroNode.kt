@@ -13,11 +13,15 @@ data class ViajeroNode(
     var viajoCon: MutableList<ConductorNode> = mutableListOf(),
     @Property("nombre_y_apellido")
     val nombreYApellido: String = "",
+    val foto :String = "",
+    val username :String = "",
     val viajeroId: String? = "",
 ) {
     constructor(viajero: Viajero) : this(
         viajeroId = viajero.id,
         nombreYApellido = viajero.nombreYApellido(),
+        foto = viajero.foto,
+        username = viajero.username
     )
 }
 

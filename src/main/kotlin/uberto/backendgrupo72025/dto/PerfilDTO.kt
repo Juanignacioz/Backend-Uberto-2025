@@ -1,6 +1,8 @@
 package uberto.backendgrupo72025.dto
 
 import uberto.backendgrupo72025.domain.*
+import uberto.backendgrupo72025.domain.neo4j.ViajeroNode
+import uberto.backendgrupo72025.repository.neo4j.ViajeroNodeRepository
 
 interface PerfilDTO {
     val id: String?
@@ -68,6 +70,13 @@ data class AmigoDTO(
 
 fun Usuario.toAmigoDTO() = AmigoDTO(
     nombreYApellido = nombreYApellido(),
+    username = username,
+    id = id,
+    foto = foto
+)
+
+fun ViajeroNode.toAmigoDTO() = AmigoDTO(
+    nombreYApellido = nombreYApellido,
     username = username,
     id = id,
     foto = foto
