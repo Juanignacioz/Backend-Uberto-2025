@@ -23,7 +23,6 @@ fun UsuarioDTO.toPerfilViajeroDTO() = PerfilViajeroDTO(
     telefono = telefono!!,
     esChofer = esChofer,
     saldo = saldo!!,
-    amigos = amigos!!,
     foto = foto
 )
 

@@ -6,7 +6,7 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 import uberto.backendgrupo72025.dto.*
 import uberto.backendgrupo72025.domain.*
-import uberto.backendgrupo72025.domain.neo4j.AmigoRelationship
+import uberto.backendgrupo72025.domain.neo4j.ViajeroNode
 import uberto.backendgrupo72025.repository.jpa.*
 import uberto.backendgrupo72025.repository.mongo.*
 import uberto.backendgrupo72025.repository.neo4j.ViajeroNodeRepository
@@ -125,37 +125,21 @@ class UsuarioService(
     }
 
     @Transactional("neo4jTransactionManager")
-    fun agregarAmigo(bearerToken: String, idAmigo: String?) {
+    fun agregarAmigoRelation(bearerToken: String, idAmigo: String?): AmigoDTO {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-//        agregarAmigoPostgres(userID, idAmigo)
-        agregarAmigoRelation(userID, idAmigo)
+         return viajeroNodeRepository.crearAmistad(userID, idAmigo).toAmigoDTO()
     }
 
-    fun agregarAmigoRelation(viajeroId: String?, idAmigo: String?) {
-         viajeroNodeRepository.crearAmistad(viajeroId, idAmigo)
-    }
-
-//    @Transactional
-//    fun agregarAmigoPostgres(idViajero: String?, idAmigo: String?): AmigoDTO {
-//        val viajero = getViajeroById(idViajero)
-//        val amigo = getViajeroById(idAmigo)
-//        viajero.agregarAmigo(amigo)
-//        viajeroRepository.save(viajero)
-//        return amigo.toAmigoDTO()
-//    }
-
-    @Transactional
+    @Transactional("neo4jTransactionManager")
     fun eliminarAmigo(bearerToken: String, idAmigo: String?) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        val viajero = getViajeroById(userID)
-        val amigo = getViajeroById(idAmigo)
-        viajero.eliminarAmigo(amigo)
-        viajeroRepository.save(viajero)
+        viajeroNodeRepository.eliminarAmigoRelation(userID,idAmigo)
     }
 
     fun getViajerosParaAgregarAmigo(bearerToken: String, query: String): List<AmigoDTO> {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return viajeroRepository.buscarViajerosNoAmigos(userID, query).map { it.toAmigoDTO() }
+        val regex = "(?i).*$query.*"
+        return viajeroNodeRepository.buscarViajerosNoAmigosRegex(userID, regex).map { it.toAmigoDTO() }
     }
 
 
@@ -315,8 +299,14 @@ class UsuarioService(
         return ultimaBusquedaRepository.findByIdOrNull(userID) //uno solo y si no hay ninguno devuelve null
     }
 
-    fun getAmigosNeo(id:String): List<AmigoDTO> {
-        return viajeroNodeRepository.findAmigosDirectos(id).map { it.toAmigoDTO() }
+    fun getAmigos(bearerToken: String): List<AmigoDTO> {
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
+        return viajeroNodeRepository.findAmigosDirectos(userID).map { it.toAmigoDTO() }
+    }
+
+    fun sugerenciasDeAmistad(bearerToken: String): List<ViajeroNode> {
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
+        return viajeroNodeRepository.findAmigosDeAmigos(userID)
     }
 
 }

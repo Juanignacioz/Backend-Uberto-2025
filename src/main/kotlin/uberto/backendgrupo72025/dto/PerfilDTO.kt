@@ -20,7 +20,6 @@ data class PerfilViajeroDTO(
     override val foto : String,
     val telefono: Int,
     val saldo: Double,
-    val amigos: List<AmigoDTO>
 ): PerfilDTO
 
 fun Viajero.toPerfilDTO() = PerfilViajeroDTO(
@@ -30,7 +29,6 @@ fun Viajero.toPerfilDTO() = PerfilViajeroDTO(
     esChofer = esChofer,
     telefono = telefono,
     saldo = saldo,
-    amigos = amigos.map { it.toAmigoDTO() },
     foto = foto
 )
 
@@ -78,6 +76,6 @@ fun Usuario.toAmigoDTO() = AmigoDTO(
 fun ViajeroNode.toAmigoDTO() = AmigoDTO(
     nombreYApellido = nombreYApellido,
     username = username,
-    id = id,
+    id = viajeroId,
     foto = foto
 )

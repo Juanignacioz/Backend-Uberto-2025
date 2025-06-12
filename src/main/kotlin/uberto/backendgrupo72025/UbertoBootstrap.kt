@@ -53,7 +53,6 @@ class UbertoBootstrap(
         esChofer = false,
         foto = "https://res.cloudinary.com/diezou2of/image/upload/v1748375420/yzn4herzts1biwnlpn9e.jpg",
         saldo = 1000000.0,
-        amigos = mutableListOf()
     )
     val viajero2 = Viajero(
         nombre = "María",
@@ -65,7 +64,6 @@ class UbertoBootstrap(
         esChofer = false,
         foto = "https://res.cloudinary.com/diezou2of/image/upload/v1743109126/h0mmvlzszwfihmeb60tx.jpg",
         saldo = 23000000.75,
-        amigos = mutableListOf()
     )
     val viajero3 = Viajero(
         nombre = "Carlos",
@@ -77,7 +75,6 @@ class UbertoBootstrap(
         esChofer = false,
         foto = "https://res.cloudinary.com/diezou2of/image/upload/v1746746263/poktdygjjmdd8n04zedy.jpg",
         saldo = 8000000.25,
-        amigos = mutableListOf()
     )
     val viajero4 = Viajero(
         nombre = "Ana",
@@ -89,7 +86,6 @@ class UbertoBootstrap(
         esChofer = false,
         foto = "https://res.cloudinary.com/diezou2of/image/upload/v1743014782/dntsqxo0znfbsdvgvygd.png",
         saldo = 3500.00,
-        amigos = mutableListOf()
     )
 
     fun crearUsuarios() {
