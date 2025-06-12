@@ -41,11 +41,21 @@ interface ViajeroNodeRepository: Neo4jRepository<ViajeroNode, String> {
         regex: String
     ): List<ViajeroNode>
 
+//    @Query("""
+//    MATCH (v:Viajero {viajeroId:$0})-[:AMISTAD*2]->(amigoDeAmigo:Viajero)
+//    WHERE NOT (v)-[:AMISTAD]->(amigoDeAmigo)
+//    RETURN DISTINCT amigoDeAmigo
+//    """)
+//    fun findAmigosDeAmigos(viajeroId: String): List<ViajeroNode>
+
     @Query("""
     MATCH (v:Viajero {viajeroId:$0})-[:AMISTAD*2]->(amigoDeAmigo:Viajero)
     WHERE NOT (v)-[:AMISTAD]->(amigoDeAmigo)
+    AND amigoDeAmigo.idUsuario <> usuario.idUsuario
+    WITH DISTINCT amigoDeAmigo, v
+    MATCH (v)-[:VIAJO_CON]->(conductor:Conductor)<-[:VIAJO_CON]-(amigoDeAmigo)
     RETURN DISTINCT amigoDeAmigo
     """)
-    fun findAmigosDeAmigos(viajeroId: String): List<ViajeroNode>
+    fun findAmigosDeAmigosConMismoConductor(viajeroId: String): List<ViajeroNode>
 
 }

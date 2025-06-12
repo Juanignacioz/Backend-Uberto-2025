@@ -127,7 +127,7 @@ class UsuarioService(
     @Transactional("neo4jTransactionManager")
     fun agregarAmigoRelation(bearerToken: String, idAmigo: String?): AmigoDTO {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-         return viajeroNodeRepository.crearAmistad(userID, idAmigo).toAmigoDTO()
+        return viajeroNodeRepository.crearAmistad(userID, idAmigo).toAmigoDTO()
     }
 
     @Transactional("neo4jTransactionManager")
@@ -306,7 +306,7 @@ class UsuarioService(
 
     fun sugerenciasDeAmistad(bearerToken: String): List<ViajeroNode> {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return viajeroNodeRepository.findAmigosDeAmigos(userID)
+        return viajeroNodeRepository.findAmigosDeAmigosConMismoConductor(userID)
     }
 
 }
