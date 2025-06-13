@@ -31,7 +31,7 @@ class UbertoBootstrap(
         crearChoferes()
         crearViajes()
         crearAmistades()
-//        crearComentarios()
+//      crearComentarios()
     }
 
     fun deleteAllData() {

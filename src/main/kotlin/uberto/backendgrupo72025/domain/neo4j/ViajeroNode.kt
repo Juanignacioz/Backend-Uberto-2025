@@ -25,6 +25,12 @@ data class ViajeroNode(
     )
 }
 
+
+
+
+
+
+
 @RelationshipProperties
 data class Viajes(
     @Id @GeneratedValue

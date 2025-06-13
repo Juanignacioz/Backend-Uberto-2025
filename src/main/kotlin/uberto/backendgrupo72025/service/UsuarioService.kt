@@ -160,7 +160,7 @@ class UsuarioService(
         validarEsChofer(esChofer)
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun cargarSaldo(bearerToken: String, monto: Double) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val usuario = getViajeroById(userID)
