@@ -57,7 +57,7 @@ class UsuarioService(
         }
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun actualizarImagen(bearerToken: String, imagen: String): String {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         lateinit var usuario: Usuario
@@ -107,7 +107,7 @@ class UsuarioService(
         return conductor.toPerfilDTO()
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun actualizarUsuario(bearerToken: String, usuarioDTO: UsuarioDTO): PerfilDTO {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         return if (esChofer) {
@@ -186,7 +186,7 @@ class UsuarioService(
     fun conductorDisponible(idConductor: String?, fechaNueva: LocalDateTime, duracion: Int) =
         !viajeService.getViajesByUsuarioId(idConductor).any { it.seSolapan(fechaNueva, duracion) }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun contratarViaje(viajeDTO: ViajeDTO, bearerToken: String) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val viajero = getViajeroById(userID)
@@ -207,7 +207,7 @@ class UsuarioService(
         viajero.validarSaldoSuficiente(viajeDTO.importe)
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun calificarViaje(bearerToken: String, calificacion: CalificacionDTO) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
 
@@ -226,7 +226,7 @@ class UsuarioService(
         }
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun eliminarComentario(bearerToken: String, idComentario: String?) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val comentario = comentarioService.getComentarioById(idComentario)
