@@ -10,13 +10,13 @@ import uberto.backendgrupo72025.domain.Conductor
 data class ConductorNode(
     @Id
     @GeneratedValue
-    val id: String? = "",
+    val id: String = "",
     @Property("nombre_y_apellido")
-    val nombreYApellido: String = "",
-    val conductorId: String? = "",
+    val nombreYApellido: String,
+    val conductorId: String?,
 ) {
     constructor(conductor: Conductor) : this(
         conductorId = conductor.id,
-        nombreYApellido = conductor.nombreYApellido(),
+        nombreYApellido = conductor.nombreYApellido()
     )
 }
