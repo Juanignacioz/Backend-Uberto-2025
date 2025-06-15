@@ -313,9 +313,9 @@ class UsuarioService(
         return viajeroNodeRepository.findAmigosDirectos(userID).map { it.toAmigoDTO() }
     }
 
-    fun sugerenciasDeAmistad(bearerToken: String): List<ViajeroNode> {
+    fun sugerenciasDeAmistad(bearerToken: String): List<AmigoDTO> {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return viajeroNodeRepository.findAmigosDeAmigosConMismoConductor(userID)
+        return viajeroNodeRepository.findAmigosDeAmigosConMismoConductor(userID).map { it.toAmigoDTO() }
     }
 
 }

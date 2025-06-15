@@ -59,9 +59,10 @@ interface ViajeroNodeRepository : Neo4jRepository<ViajeroNode, String> {
         """
     MATCH (v:Viajero {viajeroId:$0})-[:AMISTAD*2]->(amigoDeAmigo:Viajero)
     WHERE NOT (v)-[:AMISTAD]->(amigoDeAmigo)
-    AND amigoDeAmigo.idUsuario <> v.idUsuario
+    AND amigoDeAmigo.viajeroId <> v.viajeroId
     WITH DISTINCT amigoDeAmigo, v
-    MATCH (v)-[:VIAJO_CON]->(conductor:Conductor)<-[:VIAJO_CON]-(amigoDeAmigo)
+    MATCH (v)-[r1:VIAJO_CON]->(chofer:Chofer)<-[r2:VIAJO_CON]-(amigoDeAmigo)
+    WHERE r1.fechaDeFinalizacion < localdatetime() AND r2.fechaDeFinalizacion < localdatetime()
     RETURN DISTINCT amigoDeAmigo
     """
     ) //falta filtrar por fecha (viajes finalizados)
@@ -89,8 +90,8 @@ interface ViajeroNodeRepository : Neo4jRepository<ViajeroNode, String> {
     """
     )
     fun crearRelacionViaje(
-        viajeroId: String,
-        conductorId: String,
+        viajeroId: String?,
+        conductorId: String?,
         fechaFin: LocalDateTime
     )
 
