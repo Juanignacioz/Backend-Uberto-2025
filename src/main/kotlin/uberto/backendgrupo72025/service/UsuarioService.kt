@@ -23,7 +23,8 @@ class UsuarioService(
     val viajeService: ViajeService,
     val comentarioService: ComentarioService,
     val ultimaBusquedaRepository: BusquedaRepository,
-    val viajeroNodeRepository: ViajeroNodeRepository
+    val viajeroNodeRepository: ViajeroNodeRepository,
+    val neo4jService: Neo4jService,
 ) {
     @Autowired
     lateinit var tokenUtils: TokenUtils
@@ -57,7 +58,7 @@ class UsuarioService(
         }
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun actualizarImagen(bearerToken: String, imagen: String): String {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         lateinit var usuario: Usuario
@@ -107,7 +108,7 @@ class UsuarioService(
         return conductor.toPerfilDTO()
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun actualizarUsuario(bearerToken: String, usuarioDTO: UsuarioDTO): PerfilDTO {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         return if (esChofer) {
@@ -133,7 +134,7 @@ class UsuarioService(
     @Transactional("neo4jTransactionManager")
     fun eliminarAmigo(bearerToken: String, idAmigo: String?) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        viajeroNodeRepository.eliminarAmigoRelation(userID,idAmigo)
+        viajeroNodeRepository.eliminarAmigoRelation(userID, idAmigo)
     }
 
     fun getViajerosParaAgregarAmigo(bearerToken: String, query: String): List<AmigoDTO> {
@@ -186,7 +187,7 @@ class UsuarioService(
     fun conductorDisponible(idConductor: String?, fechaNueva: LocalDateTime, duracion: Int) =
         !viajeService.getViajesByUsuarioId(idConductor).any { it.seSolapan(fechaNueva, duracion) }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun contratarViaje(viajeDTO: ViajeDTO, bearerToken: String) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val viajero = getViajeroById(userID)
@@ -195,8 +196,16 @@ class UsuarioService(
         val viaje = viajeService.crearViaje(viajeDTO, viajero, conductor)
         viajero.contratarViaje(viaje)
         viajeroRepository.save(viajero)
-
+        // CREACION DE LA RELACION EN NEO4J
+        try {
+            neo4jService.crearViaje(userID, conductor.id, viaje.fechaFin)
+        } catch (neoEx: Exception) {
+            println("Error al registrar en Neo4j: ${neoEx.message}")
+            throw ViajeNeoException(neoEx.message)
+            // No relanzamos para no interrumpir el flujo principal
+        }
     }
+
 
     fun validarPuedeRealizarseViaje(viajero: Viajero, idConductor: String?, viajeDTO: ViajeDTO) {
         conductorDisponible(
@@ -207,7 +216,7 @@ class UsuarioService(
         viajero.validarSaldoSuficiente(viajeDTO.importe)
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun calificarViaje(bearerToken: String, calificacion: CalificacionDTO) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
 
@@ -226,7 +235,7 @@ class UsuarioService(
         }
     }
 
-    @Transactional
+    @Transactional("transactionManager")
     fun eliminarComentario(bearerToken: String, idComentario: String?) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         val comentario = comentarioService.getComentarioById(idComentario)
@@ -304,9 +313,9 @@ class UsuarioService(
         return viajeroNodeRepository.findAmigosDirectos(userID).map { it.toAmigoDTO() }
     }
 
-    fun sugerenciasDeAmistad(bearerToken: String): List<ViajeroNode> {
+    fun sugerenciasDeAmistad(bearerToken: String): List<AmigoDTO> {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return viajeroNodeRepository.findAmigosDeAmigosConMismoConductor(userID)
+        return viajeroNodeRepository.findAmigosDeAmigosConMismoConductor(userID).map { it.toAmigoDTO() }
     }
 
 }

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus
 class BadRequestException(message: String) : RuntimeException(message)
 
 @ResponseStatus(HttpStatus.NOT_FOUND)
-class NotFoundException(message : String) : RuntimeException(message)
+class NotFoundException(message: String) : RuntimeException(message)
 
 @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
 class NotAllowedException(message: String) : RuntimeException(message)
@@ -15,6 +15,10 @@ class NotAllowedException(message: String) : RuntimeException(message)
 @ResponseStatus(HttpStatus.UNAUTHORIZED)
 open class UnauthorizedException(message: String) : RuntimeException(message)
 
-class CredencialesInvalidasException(message: String = "Credenciales inválidas. Por favor, intente nuevamente.") : UnauthorizedException(message)
+class CredencialesInvalidasException(message: String = "Credenciales inválidas. Por favor, intente nuevamente.") :
+    UnauthorizedException(message)
 
 class TokenExpiradoException(message: String = "Sesión expirada.") : UnauthorizedException(message)
+
+
+class ViajeNeoException(message: String?): RuntimeException(message)
