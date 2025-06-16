@@ -64,7 +64,7 @@ class UsuarioController(@Autowired val usuarioService: UsuarioService) {
     fun agregarAmigo(
         @RequestHeader("Authorization") bearerToken: String,
         @PathVariable friendId: String
-    ) = usuarioService.agregarAmigo(bearerToken, friendId)
+    ) = usuarioService.agregarAmigoRelation(bearerToken, friendId)
 
     @PostMapping("/cargarSaldo")
     @Operation(summary = "Carga saldo a un usuario")
@@ -86,9 +86,16 @@ class UsuarioController(@Autowired val usuarioService: UsuarioService) {
         @RequestHeader("Authorization") bearerToken: String
     ): UltimaBusqueda? = usuarioService.getUltimaBusquedaPorViajero(bearerToken)
 
-    @GetMapping("/amigosNeo/{id}")
+    @GetMapping("/amigos")
     @Operation(summary = "Devuelve la ultima busqueda")
-    fun getAmigos(@PathVariable id : String
-    ): List<AmigoDTO> = usuarioService.getAmigosNeo(id)
+    fun getAmigos(
+        @RequestHeader("Authorization") bearerToken: String
+    ): List<AmigoDTO> = usuarioService.getAmigos(bearerToken)
+
+    @GetMapping("/sugerencias")
+    @Operation(summary = "Trae las sugerencias de viajeros para agregar como amigos")
+    fun getSugerenciasDeAmistad(
+        @RequestHeader("Authorization") bearerToken: String
+    ) = usuarioService.sugerenciasDeAmistad(bearerToken)
 
 }

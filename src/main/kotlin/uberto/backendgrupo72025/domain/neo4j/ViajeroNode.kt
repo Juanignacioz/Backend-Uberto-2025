@@ -1,16 +1,16 @@
 package uberto.backendgrupo72025.domain.neo4j
 
 import org.springframework.data.neo4j.core.schema.*
-import org.springframework.data.neo4j.core.schema.Relationship.Direction
 import uberto.backendgrupo72025.domain.Viajero
+import java.time.LocalDateTime
 
 @Node("Viajero")
-data class ViajeroNode(
+class ViajeroNode(
     @Id
     @GeneratedValue
     val id: String = "",
-    @Relationship(type = "VIAJO_CON", direction = Direction.OUTGOING)
-    var viajoCon: MutableList<ConductorNode> = mutableListOf(),
+//    @Relationship(type = "VIAJO_CON", direction = Relationship.Direction.OUTGOING)
+//    var viajes: MutableList<ViajeRelation> = mutableListOf(),
     @Property("nombre_y_apellido")
     val nombreYApellido: String = "",
     val foto :String = "",
@@ -23,12 +23,18 @@ data class ViajeroNode(
         foto = viajero.foto,
         username = viajero.username
     )
+
+//    fun agregarViaje(nuevoViaje: ViajeRelation) {
+//        viajes.add(nuevoViaje)
+//    }
 }
 
+
 @RelationshipProperties
-data class Viajes(
+data class ViajeRelation(
     @Id @GeneratedValue
-    var id: String? = null,
+    var id: String = "",
     @TargetNode
-    var chofer: ConductorNode? = null
+    var conductor: ConductorNode,
+    val fechaDeFinalizacion: LocalDateTime
 )
