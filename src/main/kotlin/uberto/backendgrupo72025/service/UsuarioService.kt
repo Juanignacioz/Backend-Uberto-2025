@@ -201,8 +201,8 @@ class UsuarioService(
             neo4jService.crearViaje(userID, conductor.id, viaje.fechaFin)
         } catch (neoEx: Exception) {
             println("Error al registrar en Neo4j: ${neoEx.message}")
+            viajeService.cancelarViaje(viaje.id) //una vez que catcheamos el error hacemos el "rollback manual" en mongo(lo borramos)
             throw ViajeNeoException(neoEx.message)
-            // No relanzamos para no interrumpir el flujo principal
         }
     }
 

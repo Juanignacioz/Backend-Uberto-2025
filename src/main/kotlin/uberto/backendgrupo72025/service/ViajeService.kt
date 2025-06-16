@@ -40,6 +40,10 @@ class ViajeService(
         return viaje
     }
 
+    fun cancelarViaje(viajeId: String) { //borramos manual al cancelar el viaje
+        dataViajeRepository.deleteById(viajeId)
+    }
+
     fun getViajesRealizadosByConductor(userID: String?): List<ViajeDTO> {
         return viajeRepository.findByConductorIdAndFechaFinBefore(userID).map {
             it.toViajeDTO(

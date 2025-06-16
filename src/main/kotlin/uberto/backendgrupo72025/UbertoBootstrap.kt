@@ -2081,7 +2081,11 @@ class UbertoBootstrap(
                     fechaFin = viajeGuardado.fechaFin
                 )
             )
-            viajeroNodeRepository.crearRelacionViaje(viajeGuardado.viajero.id, viajeGuardado.conductorId, viajeGuardado.fechaFin)
+            viajeroNodeRepository.crearRelacionViaje(
+                viajeGuardado.viajero.id,
+                viajeGuardado.conductorId,
+                viajeGuardado.fechaFin
+            )
         }
 
 
