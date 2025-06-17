@@ -38,11 +38,12 @@ class Neo4jService(
             .orElseThrow { NotFoundException("No se encontro el nodo del conductor solicitado") }
 //        viajeroNodeRepository.crearRelacionViaje(idViajero,idConductor,fechafin)
         viajeroNode.agregarViaje(ViajeRelation(conductorNode, fechafin))
-        println("viajesssssssssss"+ viajeroNode.viajes)
-        println("#################################")
-        println("id de la relacion " + viajeroNode.viajes.size)
+
 
         viajeroNodeRepository.save(viajeroNode)
+        println("#################################")
+        println("viajesssssssssss  +      $viajeroNode.viajes")
+        println("#################################")
     }
 
 }

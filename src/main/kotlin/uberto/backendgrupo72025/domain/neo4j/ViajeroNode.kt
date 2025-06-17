@@ -32,8 +32,9 @@ class ViajeroNode(
 
 @RelationshipProperties
 data class ViajeRelation(
-    @Id @GeneratedValue
-    var id: String = "",
+    @Id
+    @GeneratedValue
+    var id: String? = null,
     @TargetNode
     var conductor: ConductorNode,
     val fechaDeFinalizacion: LocalDateTime
