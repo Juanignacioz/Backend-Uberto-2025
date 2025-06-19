@@ -19,14 +19,6 @@ class Viajero(
     foto : String="",
     @Column
     var saldo: Double = 0.0,
-//    @ManyToMany(fetch = FetchType.LAZY)
-//    @JsonIgnore
-//    @JoinTable(
-//        name = "amistades",
-//        joinColumns = [JoinColumn(name = "viajero_id")],
-//        inverseJoinColumns = [JoinColumn(name = "amigo_id")]
-//    )
-//    val amigos: MutableList<Viajero> = mutableListOf()
 ) : Usuario(id,nombre, apellido, edad, username, contrasenia, telefono, esChofer,rol,foto) {
 
 

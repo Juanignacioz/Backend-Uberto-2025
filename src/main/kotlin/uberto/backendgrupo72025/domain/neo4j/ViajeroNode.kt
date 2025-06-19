@@ -2,19 +2,20 @@ package uberto.backendgrupo72025.domain.neo4j
 
 import org.springframework.data.neo4j.core.schema.*
 import uberto.backendgrupo72025.domain.Viajero
-import java.time.LocalDateTime
 
 @Node("Viajero")
 class ViajeroNode(
     @Id
     @GeneratedValue
     val id: String = "",
-//    @Relationship(type = "VIAJO_CON", direction = Relationship.Direction.OUTGOING)
-//    var viajes: MutableList<ViajeRelation> = mutableListOf(),
+    @Relationship(type = "VIAJO_CON", direction = Relationship.Direction.OUTGOING)
+    var viajes: MutableList<ViajeRelation> = mutableListOf(),
+    @Relationship(type = "AMISTAD", direction = Relationship.Direction.OUTGOING)
+    var amigos: MutableList<ViajeroNode> = mutableListOf(),
     @Property("nombre_y_apellido")
     val nombreYApellido: String = "",
-    val foto :String = "",
-    val username :String = "",
+    val foto: String = "",
+    val username: String = "",
     val viajeroId: String? = "",
 ) {
     constructor(viajero: Viajero) : this(
@@ -24,17 +25,13 @@ class ViajeroNode(
         username = viajero.username
     )
 
-//    fun agregarViaje(nuevoViaje: ViajeRelation) {
-//        viajes.add(nuevoViaje)
-//    }
+    fun agregarViaje(nuevoViaje: ViajeRelation) {
+        viajes.add(nuevoViaje)
+    }
+
+    fun agregarAmigo(amigo: ViajeroNode) {
+        amigos.add(amigo)
+    }
 }
 
 
-@RelationshipProperties
-data class ViajeRelation(
-    @Id @GeneratedValue
-    var id: String = "",
-    @TargetNode
-    var conductor: ConductorNode,
-    val fechaDeFinalizacion: LocalDateTime
-)

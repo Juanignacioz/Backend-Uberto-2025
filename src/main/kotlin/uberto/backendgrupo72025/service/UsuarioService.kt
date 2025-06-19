@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 import uberto.backendgrupo72025.dto.*
 import uberto.backendgrupo72025.domain.*
-import uberto.backendgrupo72025.domain.neo4j.ViajeroNode
 import uberto.backendgrupo72025.repository.jpa.*
 import uberto.backendgrupo72025.repository.mongo.*
 import uberto.backendgrupo72025.repository.neo4j.ViajeroNodeRepository
@@ -126,12 +125,6 @@ class UsuarioService(
     }
 
     @Transactional("neo4jTransactionManager")
-    fun agregarAmigoRelation(bearerToken: String, idAmigo: String?): AmigoDTO {
-        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return viajeroNodeRepository.crearAmistad(userID, idAmigo).toAmigoDTO()
-    }
-
-    @Transactional("neo4jTransactionManager")
     fun eliminarAmigo(bearerToken: String, idAmigo: String?) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         viajeroNodeRepository.eliminarAmigoRelation(userID, idAmigo)
@@ -142,7 +135,6 @@ class UsuarioService(
         val regex = "(?i).*$query.*"
         return viajeroNodeRepository.buscarViajerosNoAmigosRegex(userID, regex).map { it.toAmigoDTO() }
     }
-
 
     fun validarSaldoPositivo(monto: Double) {
         if (monto <= 0 || monto != monto.toLong().toDouble()) {
@@ -201,7 +193,7 @@ class UsuarioService(
             neo4jService.crearViaje(userID, conductor.id, viaje.fechaFin)
         } catch (neoEx: Exception) {
             println("Error al registrar en Neo4j: ${neoEx.message}")
-            viajeService.cancelarViaje(viaje.id) //una vez que catcheamos el error hacemos el "rollback manual" en mongo(lo borramos)
+            viajeService.cancelarViaje(viaje.id)
             throw ViajeNeoException(neoEx.message)
         }
     }
@@ -287,7 +279,7 @@ class UsuarioService(
         return ViajesCompletadosDTO(viajesRealizadosDTO, totalFacturado)
     }
 
-    fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> { //del viaje paso al user
+    fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
 
         return if (esChofer) {
@@ -305,12 +297,7 @@ class UsuarioService(
 
     fun getUltimaBusquedaPorViajero(bearerToken: String): UltimaBusqueda? {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return ultimaBusquedaRepository.findByIdOrNull(userID) //uno solo y si no hay ninguno devuelve null
-    }
-
-    fun getAmigos(bearerToken: String): List<AmigoDTO> {
-        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return viajeroNodeRepository.findAmigosDirectos(userID).map { it.toAmigoDTO() }
+        return ultimaBusquedaRepository.findByIdOrNull(userID)
     }
 
     fun sugerenciasDeAmistad(bearerToken: String): List<AmigoDTO> {

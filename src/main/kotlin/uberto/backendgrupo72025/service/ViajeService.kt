@@ -40,7 +40,7 @@ class ViajeService(
         return viaje
     }
 
-    fun cancelarViaje(viajeId: String) { //borramos manual al cancelar el viaje
+    fun cancelarViaje(viajeId: String) {
         dataViajeRepository.deleteById(viajeId)
     }
 
