@@ -35,10 +35,12 @@ spring:
         min-idle: 2
 
   neo4j:
-    uri: neo4j+s://b67f6ce0.databases.neo4j.io
+    #uri: neo4j+s://b67f6ce0.databases.neo4j.io
+    uri: neo4j+s://d410fe7b.databases.neo4j.io
     authentication:
       username: neo4j
-      password: sI1xyOdR-sqojTjZrqhnTTMWq-K0EoH9-v0LAj7LDNc
+      #password: sI1xyOdR-sqojTjZrqhnTTMWq-K0EoH9-v0LAj7LDNc
+      password: tUelEMVlcoMTul5Tp85MYqbnubMwhX14giQCyuUg3Uc
 
 
 logging:
