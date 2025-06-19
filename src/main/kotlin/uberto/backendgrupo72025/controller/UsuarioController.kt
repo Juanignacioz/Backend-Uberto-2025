@@ -5,12 +5,14 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.web.bind.annotation.*
 import uberto.backendgrupo72025.domain.UltimaBusqueda
 import uberto.backendgrupo72025.dto.*
+import uberto.backendgrupo72025.service.Neo4jService
 
 import uberto.backendgrupo72025.service.UsuarioService
 
 
 @RestController
-class UsuarioController(@Autowired val usuarioService: UsuarioService) {
+class UsuarioController(@Autowired val usuarioService: UsuarioService,
+    @Autowired val neo4jService: Neo4jService) {
 
     @PostMapping("/usuarioLogin")
     @Operation(summary = "Devuelve un usuario que coincida user y pass")
@@ -64,7 +66,7 @@ class UsuarioController(@Autowired val usuarioService: UsuarioService) {
     fun agregarAmigo(
         @RequestHeader("Authorization") bearerToken: String,
         @PathVariable friendId: String
-    ) = usuarioService.agregarAmigoRelation(bearerToken, friendId)
+    ) = neo4jService.agregarAmigo(bearerToken, friendId)
 
     @PostMapping("/cargarSaldo")
     @Operation(summary = "Carga saldo a un usuario")

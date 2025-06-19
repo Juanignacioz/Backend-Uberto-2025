@@ -6,7 +6,6 @@ import org.springframework.transaction.annotation.Transactional
 import org.springframework.stereotype.Service
 import uberto.backendgrupo72025.dto.*
 import uberto.backendgrupo72025.domain.*
-import uberto.backendgrupo72025.domain.neo4j.ViajeroNode
 import uberto.backendgrupo72025.repository.jpa.*
 import uberto.backendgrupo72025.repository.mongo.*
 import uberto.backendgrupo72025.repository.neo4j.ViajeroNodeRepository
@@ -126,12 +125,6 @@ class UsuarioService(
     }
 
     @Transactional("neo4jTransactionManager")
-    fun agregarAmigoRelation(bearerToken: String, idAmigo: String?): AmigoDTO {
-        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return viajeroNodeRepository.crearAmistad(userID, idAmigo).toAmigoDTO()
-    }
-
-    @Transactional("neo4jTransactionManager")
     fun eliminarAmigo(bearerToken: String, idAmigo: String?) {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
         viajeroNodeRepository.eliminarAmigoRelation(userID, idAmigo)
@@ -142,7 +135,6 @@ class UsuarioService(
         val regex = "(?i).*$query.*"
         return viajeroNodeRepository.buscarViajerosNoAmigosRegex(userID, regex).map { it.toAmigoDTO() }
     }
-
 
     fun validarSaldoPositivo(monto: Double) {
         if (monto <= 0 || monto != monto.toLong().toDouble()) {

@@ -11,6 +11,8 @@ class ViajeroNode(
     val id: String = "",
     @Relationship(type = "VIAJO_CON", direction = Relationship.Direction.OUTGOING)
     var viajes: MutableList<ViajeRelation> = mutableListOf(),
+    @Relationship(type = "AMISTAD", direction = Relationship.Direction.OUTGOING)
+    var amigos: MutableList<ViajeroNode> = mutableListOf(),
     @Property("nombre_y_apellido")
     val nombreYApellido: String = "",
     val foto :String = "",
@@ -27,7 +29,12 @@ class ViajeroNode(
     fun agregarViaje(nuevoViaje: ViajeRelation) {
         viajes.add(nuevoViaje)
     }
+
+    fun agregarAmigo(amigo: ViajeroNode) {
+        amigos.add(amigo)
+    }
 }
+
 
 
 @RelationshipProperties

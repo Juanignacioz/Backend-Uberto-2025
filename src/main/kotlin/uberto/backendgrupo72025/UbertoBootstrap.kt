@@ -5,6 +5,7 @@ import org.springframework.beans.factory.InitializingBean
 import org.springframework.stereotype.Component
 import org.springframework.transaction.annotation.Transactional
 import uberto.backendgrupo72025.domain.neo4j.ConductorNode
+import uberto.backendgrupo72025.domain.neo4j.ViajeRelation
 import uberto.backendgrupo72025.domain.neo4j.ViajeroNode
 import uberto.backendgrupo72025.repository.jpa.*
 import uberto.backendgrupo72025.repository.mongo.*
@@ -41,6 +42,12 @@ class UbertoBootstrap(
         viajeroNodeRepository.deleteAll()
         conductorNodeRepository.deleteAll()
     }
+
+    fun findViajeroNodeById(idViajero: String?) = viajeroNodeRepository.findByViajeroId(idViajero)
+        .orElseThrow { NotFoundException("El viajero con id ${idViajero} no fue encontrado") }
+
+    fun findConductorNodeById(idConductor: String?) = conductorNodeRepository.findByConductorId(idConductor)
+        .orElseThrow { NotFoundException("El conductor con id ${idConductor} no fue encontrado") }
 
     // VIAJEROS
     val viajero1 = Viajero(
@@ -2081,11 +2088,10 @@ class UbertoBootstrap(
                     fechaFin = viajeGuardado.fechaFin
                 )
             )
-            viajeroNodeRepository.crearRelacionViaje(
-                viajeGuardado.viajero.id,
-                viajeGuardado.conductorId,
-                viajeGuardado.fechaFin
-            )
+            val viajeroNode = findViajeroNodeById(viaje.viajero.id)
+            val conductorNode = findConductorNodeById(viaje.conductorId)
+            viajeroNode.agregarViaje(ViajeRelation(conductorNode, viaje.fechaFin))
+            viajeroNodeRepository.save(viajeroNode)
         }
 
 
@@ -2093,9 +2099,13 @@ class UbertoBootstrap(
 
     // AMISTADES
     fun crearAmistades() {
-        viajeroNodeRepository.crearAmistad(viajero1.id, viajero2.id)
-        viajeroNodeRepository.crearAmistad(viajero2.id, viajero3.id)
-//        viajeroNodeRepository.crearAmistad(viajero1.id, viajero4.id)
+        val viajeroNode1 = findViajeroNodeById(viajero1.id)
+        val viajeroNode2 = findViajeroNodeById(viajero2.id)
+        val viajeroNode3 = findViajeroNodeById(viajero3.id)
+        val viajeroNode4 = findViajeroNodeById(viajero4.id)
+        viajeroNode1.agregarAmigo(viajeroNode2)
+        viajeroNode2.agregarAmigo(viajeroNode3)
+        viajeroNodeRepository.saveAll(listOf(viajeroNode1,viajeroNode2,viajeroNode3,viajeroNode4))
     }
 
     // COMENTARIOS
