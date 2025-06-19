@@ -8,17 +8,12 @@ import java.time.LocalDate
 @Document(collection = "vehiculos")
 class Vehiculo(
     @Id
-    //@GeneratedValue(strategy = GenerationType.UUID)
+
     var id: String =  ObjectId().toHexString(),
-  //  @field:Size(max = 20)
     var marca: String = "",
-  //  @Column(length = 20)
     var modelo : String = "",
- ///   @Column(length = 7)
     var dominio: String = "",
-  //  @Column(length = 4)
     var anio: Int = 0,
-   // @Column(nullable = false)
     var active: Boolean = true
 ) {
 

@@ -2,7 +2,6 @@ package uberto.backendgrupo72025.domain.neo4j
 
 import org.springframework.data.neo4j.core.schema.*
 import uberto.backendgrupo72025.domain.Viajero
-import java.time.LocalDateTime
 
 @Node("Viajero")
 class ViajeroNode(
@@ -15,8 +14,8 @@ class ViajeroNode(
     var amigos: MutableList<ViajeroNode> = mutableListOf(),
     @Property("nombre_y_apellido")
     val nombreYApellido: String = "",
-    val foto :String = "",
-    val username :String = "",
+    val foto: String = "",
+    val username: String = "",
     val viajeroId: String? = "",
 ) {
     constructor(viajero: Viajero) : this(
@@ -36,18 +35,3 @@ class ViajeroNode(
 }
 
 
-
-@RelationshipProperties
-data class ViajeRelation(
-    @Id
-    @GeneratedValue
-    var id: String? = null,
-    @TargetNode
-    var conductor: ConductorNode,
-    val fechaDeFinalizacion: LocalDateTime
-) {
-    constructor(conductorNode: ConductorNode, fechaFin: LocalDateTime) : this(
-        conductor = conductorNode,
-        fechaDeFinalizacion = fechaFin
-    )
-}

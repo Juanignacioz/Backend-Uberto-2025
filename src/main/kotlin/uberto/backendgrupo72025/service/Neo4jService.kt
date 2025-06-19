@@ -25,26 +25,9 @@ class Neo4jService(
     fun getViajeroNodeById(idViajero: String?): ViajeroNode = viajeroNodeRepository.findByViajeroId(idViajero)
         .orElseThrow { NotFoundException("No se encontro el nodo del viajero solicitado") }
 
-    fun getConductorNodeById(idConductor: String?): ConductorNode = conductorNodeRepository.findByConductorId(idConductor)
-        .orElseThrow { NotFoundException("No se encontro el nodo del conductor solicitado") }
-
-
-
-//    @Transactional("neo4jTransactionManager")
-//    fun crearViaje(idViajero: String, idConductor: String?, fechafin: LocalDateTime) {
-//        val viajero = viajeroNodeRepository.findByViajeroId(idViajero)
-//            .orElseThrow { NotFoundException("No se encontro el nodo del viajero solicitado") }
-//        val conductor = conductorNodeRepository.findByConductorId(idConductor!!)
-//            .orElseThrow { NotFoundException("No se encontro el nodo del conductor solicitado") }
-//        viajeroNodeRepository.crearRelacionViaje(idViajero,idConductor,fechafin)
-////        val nuevoViaje = ViajeRelation(
-////            conductor = conductor,
-////            fechaDeFinalizacion = fechafin
-////        )
-////        viajero.agregarViaje(nuevoViaje)
-////        println("viajesssssssssss"+ viajero.viajes)
-////        viajeroNodeRepository.save(viajero)
-//    }
+    fun getConductorNodeById(idConductor: String?): ConductorNode =
+        conductorNodeRepository.findByConductorId(idConductor)
+            .orElseThrow { NotFoundException("No se encontro el nodo del conductor solicitado") }
 
     @Transactional("neo4jTransactionManager")
     fun agregarAmigo(bearerToken: String, idAmigo: String?): AmigoDTO {
@@ -54,19 +37,20 @@ class Neo4jService(
         viajero.agregarAmigo(nuevoAmigo)
         viajeroNodeRepository.save(viajero)
         return nuevoAmigo.toAmigoDTO()
-//        return viajeroNodeRepository.crearAmistad(userID, idAmigo).toAmigoDTO()
+    }
+
+    fun getAmigos(bearerToken: String): List<AmigoDTO> {
+        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
+        val viajero = getViajeroNodeById(userID)
+        return viajero.amigos.map { it.toAmigoDTO() }
     }
 
     @Transactional("neo4jTransactionManager")
     fun crearViaje(idViajero: String, idConductor: String?, fechafin: LocalDateTime) {
         val viajeroNode = getViajeroNodeById(idViajero)
         val conductorNode = getConductorNodeById(idConductor)
-//        viajeroNodeRepository.crearRelacionViaje(idViajero,idConductor,fechafin)
         viajeroNode.agregarViaje(ViajeRelation(conductorNode, fechafin))
-
-
         viajeroNodeRepository.save(viajeroNode)
-
     }
 
 }

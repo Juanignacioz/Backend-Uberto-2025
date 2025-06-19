@@ -34,7 +34,7 @@ abstract class Usuario(
 
     fun nombreYApellido() = "$nombre $apellido"
 
-    //access
+
     fun accesoUsuario(user: UsuarioLoginDTO): Boolean {
         return user.usuario == username && user.contrasenia == contrasenia
     }

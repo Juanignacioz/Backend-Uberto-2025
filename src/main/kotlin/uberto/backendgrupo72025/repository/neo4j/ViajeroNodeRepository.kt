@@ -15,23 +15,6 @@ interface ViajeroNodeRepository : Neo4jRepository<ViajeroNode, String> {
 
     @Query(
         """
-        MATCH (viajero:Viajero {viajeroId:$0}),(amigo:Viajero {viajeroId:$1}) 
-        MERGE (viajero)-[:AMISTAD]->(amigo)
-        RETURN amigo
-    """
-    )
-    fun crearAmistad(viajeroId: String?, amigoId: String?): ViajeroNode
-
-    @Query(
-        """
-        MATCH (v:Viajero {viajeroId:$0})-[:AMISTAD]->(amigo:Viajero)
-        RETURN amigo
-    """
-    )
-    fun findAmigosDirectos(viajeroId: String): List<ViajeroNode>
-
-    @Query(
-        """
          MATCH (v:Viajero {viajeroId:$0})-[a:AMISTAD]->(amigo:Viajero {viajeroId: $1})
          DELETE a
     """
@@ -65,34 +48,8 @@ interface ViajeroNodeRepository : Neo4jRepository<ViajeroNode, String> {
     WHERE r1.fechaDeFinalizacion < localdatetime() AND r2.fechaDeFinalizacion < localdatetime()
     RETURN DISTINCT amigoDeAmigo
     """
-    ) //falta filtrar por fecha (viajes finalizados)
+    )
     fun findAmigosDeAmigosConMismoConductor(viajeroId: String): List<ViajeroNode>
-//armar el circuito
-    /*
-    *   @Query("""
-        MATCH (v:Viajero {viajeroId: \$viajeroId})-[:AMISTAD*2]->(amigoDeAmigo:Viajero)
-        WHERE NOT (v)-[:AMISTAD]->(amigoDeAmigo)
-        AND amigoDeAmigo.viajeroId <> v.viajeroId
-        WITH DISTINCT amigoDeAmigo, v
-        MATCH (v)-[:VIAJO_CON]->(viaje:Viaje)-[:VIAJO_CON]->(conductor:Conductor)
-        MATCH (amigoDeAmigo)-[:VIAJO_CON]->(otroViaje:Viaje)-[:VIAJO_CON]->(conductor)
-        RETURN DISTINCT amigoDeAmigo
-    """)
-    */
 
-    @Query(
-        """
-        MATCH (v:Viajero {viajeroId: $0})
-        MATCH (c:Chofer {conductorId: $1})
-        CREATE (v)-[r:VIAJO_CON {
-            fechaDeFinalizacion: $2
-        }]->(c)
-    """
-    )
-    fun crearRelacionViaje(
-        viajeroId: String?,
-        conductorId: String?,
-        fechaFin: LocalDateTime
-    )
 
 }

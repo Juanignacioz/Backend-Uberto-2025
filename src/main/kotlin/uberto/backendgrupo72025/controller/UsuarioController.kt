@@ -11,8 +11,10 @@ import uberto.backendgrupo72025.service.UsuarioService
 
 
 @RestController
-class UsuarioController(@Autowired val usuarioService: UsuarioService,
-    @Autowired val neo4jService: Neo4jService) {
+class UsuarioController(
+    @Autowired val usuarioService: UsuarioService,
+    @Autowired val neo4jService: Neo4jService
+) {
 
     @PostMapping("/usuarioLogin")
     @Operation(summary = "Devuelve un usuario que coincida user y pass")
@@ -31,7 +33,7 @@ class UsuarioController(@Autowired val usuarioService: UsuarioService,
     fun contratarViaje(
         @RequestBody viaje: ViajeDTO,
         @RequestHeader("Authorization") bearerToken: String,
-    ) = usuarioService.contratarViaje(viaje,bearerToken)
+    ) = usuarioService.contratarViaje(viaje, bearerToken)
 
     @PostMapping("/home/buscar")
     @Operation(summary = "Devuelve los choferes disponibles")
@@ -92,7 +94,7 @@ class UsuarioController(@Autowired val usuarioService: UsuarioService,
     @Operation(summary = "Devuelve la ultima busqueda")
     fun getAmigos(
         @RequestHeader("Authorization") bearerToken: String
-    ): List<AmigoDTO> = usuarioService.getAmigos(bearerToken)
+    ): List<AmigoDTO> = neo4jService.getAmigos(bearerToken)
 
     @GetMapping("/sugerencias")
     @Operation(summary = "Trae las sugerencias de viajeros para agregar como amigos")

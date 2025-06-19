@@ -193,7 +193,7 @@ class UsuarioService(
             neo4jService.crearViaje(userID, conductor.id, viaje.fechaFin)
         } catch (neoEx: Exception) {
             println("Error al registrar en Neo4j: ${neoEx.message}")
-            viajeService.cancelarViaje(viaje.id) //una vez que catcheamos el error hacemos el "rollback manual" en mongo(lo borramos)
+            viajeService.cancelarViaje(viaje.id)
             throw ViajeNeoException(neoEx.message)
         }
     }
@@ -279,7 +279,7 @@ class UsuarioService(
         return ViajesCompletadosDTO(viajesRealizadosDTO, totalFacturado)
     }
 
-    fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> { //del viaje paso al user
+    fun getViajesPendientesByUsuario(bearerToken: String): List<ViajeDTO> {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
 
         return if (esChofer) {
@@ -297,12 +297,7 @@ class UsuarioService(
 
     fun getUltimaBusquedaPorViajero(bearerToken: String): UltimaBusqueda? {
         val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return ultimaBusquedaRepository.findByIdOrNull(userID) //uno solo y si no hay ninguno devuelve null
-    }
-
-    fun getAmigos(bearerToken: String): List<AmigoDTO> {
-        val (userID, esChofer) = tokenUtils.decodificatorAuth(bearerToken)
-        return viajeroNodeRepository.findAmigosDirectos(userID).map { it.toAmigoDTO() }
+        return ultimaBusquedaRepository.findByIdOrNull(userID)
     }
 
     fun sugerenciasDeAmistad(bearerToken: String): List<AmigoDTO> {
